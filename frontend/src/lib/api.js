@@ -1,0 +1,15 @@
+
+
+const base = window.location.origin + "/api/"
+
+export default {
+  login: function(username, password) {},
+  find: function(type, query) {},
+  get: function(type, id) {
+    return fetch(base + type + '/' + id)
+      .then(response => response.json())
+  },
+  create: function(type, item) {},
+  update: function(type, id, item) {},
+  delete: function(type, id) {},
+}
