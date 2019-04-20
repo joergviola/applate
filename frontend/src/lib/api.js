@@ -1,6 +1,6 @@
 
 
-const base = window.location.origin + "/api/"
+const base = window.location.origin + window.location.pathname + "/api/"
 
 export default {
   login: function(username, password) {},
