@@ -12,3 +12,4 @@
 */
 
 Route::post('/login', "UserController@login");
+Route::post('/user', "UserController@register");

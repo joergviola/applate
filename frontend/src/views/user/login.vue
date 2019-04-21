@@ -43,8 +43,8 @@
       login() {
         this.message = null;
         api.login(this.email, this.password)
+          .then(user => this.$router.push({path: "/"}))
           .catch(e => this.message = e.message)
-        this.$router.push({path: "/"})
       }
     }
   }

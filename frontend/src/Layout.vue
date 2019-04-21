@@ -95,10 +95,7 @@
       </v-btn>
       <v-btn icon large>
         <v-avatar size="32px" tile>
-          <img
-                  src="https://cdn.vuetifyjs.com/images/logos/logo.svg"
-                  alt="Vuetify"
-          >
+          {{user.name}}
         </v-avatar>
       </v-btn>
     </v-toolbar>
@@ -114,10 +111,13 @@
 
 <script>
 
+  import api from "@/lib/api.js"
+
   export default {
     data: () => ({
       dialog: false,
       drawer: null,
+      user: api.user,
       items: [
         { icon: 'contacts', text: 'Verfahren', route: '/verfahren' },
         { icon: 'history', text: 'Auftragsdatenverarbeiter', route: '/about' },

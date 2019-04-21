@@ -11,7 +11,9 @@
                             </v-toolbar>
                             <v-card-text>
                                 <v-form>
-                                    <v-text-field prepend-icon="person" name="login" label="Login" type="text"
+                                    <v-text-field prepend-icon="person" name="name" label="Name" type="text"
+                                                  v-model="name"></v-text-field>
+                                    <v-text-field prepend-icon="email" name="login" label="E-Mail" type="text"
                                                   v-model="email"></v-text-field>
                                     <v-text-field id="password" prepend-icon="lock" name="password" label="Password"
                                                   type="password" v-model="password"></v-text-field>
@@ -35,6 +37,7 @@
 
   export default {
     data: () => ({
+      name: "",
       email: "",
       password: "",
       message: null,
@@ -42,7 +45,7 @@
     methods: {
       login() {
         this.message = null;
-        api.login(this.email, this.password)
+        api.register(this.email, this.password, this.name)
           .catch(e => this.message = e.message)
         this.$router.push({path: "/"})
       }
