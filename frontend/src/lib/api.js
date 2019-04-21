@@ -3,6 +3,9 @@
 const base = window.location.origin + window.location.pathname + "/api/"
 
 export default {
+  loggedIn: function() {
+    return !!this.user
+  },
   login: function(username, password) {},
   find: function(type, query) {},
   get: function(type, id) {

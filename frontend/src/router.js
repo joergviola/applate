@@ -4,12 +4,14 @@ import Layout from './Layout.vue'
 import VerfahrenListe from './views/verfahren/liste.vue'
 import Verfahren from './views/verfahren/edit.vue'
 import Cockpit from './views/cockpit/edit.vue'
+import Login from './views/login/login.vue'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
-    { path: '/app', name: 'app', component: Layout, children: [
+    { path: '/login', name: 'login', component: Login, meta: { pub: true } },
+    { path: '/', name: 'app', component: Layout, children: [
         { path: '/verfahren', name: 'verfahren-liste', component: VerfahrenListe },
         { path: '/verfahren/:id', name: 'verfahren-edit', component: Verfahren },
         { path: '/about', name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue') },
