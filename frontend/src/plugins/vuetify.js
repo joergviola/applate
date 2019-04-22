@@ -1,9 +1,10 @@
+import 'material-design-icons-iconfont/dist/material-design-icons.css' // Ensure you are using css-loader
+
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import 'vuetify/src/stylus/app.styl'
 import de from 'vuetify/es5/locale/de'
 
-import 'material-design-icons-iconfont/dist/material-design-icons.css' // Ensure you are using css-loader
 import 'typeface-roboto/index.css';
 
 Vue.use(Vuetify, {

@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class APIController extends Controller
 {
+    public function query(Request $request, $type) {
+        $query = $request->all();
+        $items = API::query($type, $query);
+        return response()->json($items);
+    }
+
     public function read(Request $request, $type, $id) {
         $item = API::read($type, $id);
         if (!$item) return response("Not found", 404);

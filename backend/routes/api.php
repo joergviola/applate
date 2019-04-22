@@ -14,5 +14,6 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['prefix' => 'v1.0' , 'middleware' => ['auth:api']], function() {
+    Route::post('/{type}/query', 'APIController@query');
     Route::get('/{type}/{id}', 'APIController@read');
 });

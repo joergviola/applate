@@ -56,6 +56,7 @@ const theAPI = {
     return call('POST', '/user', {email, password, name})
   },
   find: function (type, query) {
+    return call('POST',  '/' + type + '/query', query)
   },
   get: function (type, id) {
     return call('GET',  '/' + type + '/' + id)

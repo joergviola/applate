@@ -11,6 +11,11 @@ class API
         return DB::table($type);
     }
 
+    public static function query($type, $query) {
+        return self::provider($type)
+            ->get();
+    }
+
     public static function read($type, $id) {
         return self::provider($type)->find($id);
     }

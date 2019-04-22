@@ -120,7 +120,7 @@
       user: api.user(),
       items: [
         { icon: 'contacts', text: 'Verfahren', route: '/verfahren' },
-        { icon: 'history', text: 'Auftragsdatenverarbeiter', route: '/about' },
+        { icon: 'person', text: 'Benutzer', route: '/user' },
         { icon: 'content_copy', text: 'TOM', route: '/about' },
         {
           icon: 'keyboard_arrow_up',
