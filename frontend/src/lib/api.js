@@ -1,18 +1,20 @@
-const base = "http://localhost/gdpr-portal/backend/public"
-const oauth = base + "/oauth"
-const api = base + "/api"
-
+const base = "http://localhost/gdpr-portal/backend/public/api"
 
 function call(method, url, data) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  }
+  const user = theAPI.user()
+  if (user) {
+    headers["Authorization"] = "Bearer " + user.token
+  }
   return fetch(base + url, {
     method: method, // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, cors, *same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
     credentials: "same-origin", // include, *same-origin, omit
-    headers: {
-      "Content-Type": "application/json",
-      // "Content-Type": "application/x-www-form-urlencoded",
-    },
+    headers: headers,
     redirect: "follow", // manual, *follow, error
     referrer: "no-referrer", // no-referrer, *client
     body: JSON.stringify(data), // body data type must match "Content-Type" header
@@ -28,14 +30,27 @@ function call(method, url, data) {
     })
 }
 
+const storage = {
+  set(key, value) {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  },
+  get(key) {
+    const value = window.localStorage.getItem(key);
+    if (!value) return value;
+    return JSON.parse(value);
+  },
+  remove(key) {
+    window.localStorage.removeItem(key);
+  },
+}
 
-export default {
-  loggedIn: function () {
-    return !!this.user
+const theAPI = {
+  user: function () {
+    return storage.get('user')
   },
   login: function (email, password) {
-    return call('POST', '/login', {email, password})
-      .then(user => this.user = user)
+    return call('POST', '/../login', {email, password})
+      .then(user => storage.set('user', user))
   },
   register: function (email, password, name) {
     return call('POST', '/user', {email, password, name})
@@ -43,8 +58,7 @@ export default {
   find: function (type, query) {
   },
   get: function (type, id) {
-    return fetch(api + '/' + type + '/' + id)
-      .then(response => response.json())
+    return call('GET',  '/' + type + '/' + id)
   },
   create: function (type, item) {
   },
@@ -53,3 +67,5 @@ export default {
   delete: function (type, id) {
   },
 }
+
+export default theAPI;

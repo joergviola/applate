@@ -344,7 +344,7 @@
 
     methods: {
       initialize () {
-        api.get('verfahren', this.$route.params.id)
+        api.get('user', this.$route.params.id)
           .then(item => this.item = item)
       },
       toggle(no) {

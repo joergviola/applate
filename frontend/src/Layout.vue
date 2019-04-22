@@ -117,7 +117,7 @@
     data: () => ({
       dialog: false,
       drawer: null,
-      user: api.user,
+      user: api.user(),
       items: [
         { icon: 'contacts', text: 'Verfahren', route: '/verfahren' },
         { icon: 'history', text: 'Auftragsdatenverarbeiter', route: '/about' },

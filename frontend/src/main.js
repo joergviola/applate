@@ -10,7 +10,7 @@ Vue.config.productionTip = false
 router.beforeEach((to, from, next) => {
   const pub = to.matched.some(record => record.meta.pub);
 
-  if (!api.loggedIn() && !pub) {
+  if (!api.user() && !pub) {
     const loginpath = window.location.pathname;
     next({ name: 'login', query: { from: loginpath } });
   }
