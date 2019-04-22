@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from './Layout.vue'
 import UserList from './views/user/list.vue'
+import UserEdit from './views/user/edit.vue'
 import VerfahrenListe from './views/verfahren/liste.vue'
 import Verfahren from './views/verfahren/edit.vue'
 import Cockpit from './views/cockpit/edit.vue'
@@ -19,7 +20,7 @@ export default new Router({
         { path: '/verfahren/:id', name: 'verfahren-edit', component: Verfahren },
         { path: '/about', name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue') },
         { path: '/user', name: 'user-list', component: UserList },
-        { path: '/user/:id', name: 'user-edit', component: Verfahren },
+        { path: '/user/:id', name: 'user-edit', component: UserEdit },
       ] },
     { path: '/public/verfahren/:id', name: 'public-verfahren-edit', component: Verfahren },
     { path: '/public/datenschutz/:role', name: 'datenschutz', component: Cockpit },
