@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Events\ApiQueryEvent;
+use App\Events\ApiUpdateEvent;
 use Illuminate\Support\Facades\DB;
 
 class API
@@ -12,15 +14,30 @@ class API
     }
 
     public static function query($type, $query) {
-        return self::provider($type)
+        $result = self::provider($type)
             ->get();
+        foreach ($result as $item) {
+            event(new ApiQueryEvent($type, $item));
+        }
+        return $result;
     }
 
     public static function read($type, $id) {
-        return self::provider($type)->find($id);
+        $result = self::provider($type)
+            ->find($id);
+        event(new ApiQueryEvent($type, $result));
+        return $result;
     }
 
     public static function create($type, $data) {
-        return self::provider($type)->insertGetId($data);
+        return self::provider($type)
+            ->insertGetId($data);
+    }
+
+    public static function update($type, $id, $data) {
+        event(new ApiUpdateEvent($type, $data));
+        return self::provider($type)
+            ->where('id', $id)
+            ->update($data);
     }
 }

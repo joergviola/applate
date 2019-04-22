@@ -62,10 +62,13 @@ const theAPI = {
     return call('GET',  '/' + type + '/' + id)
   },
   create: function (type, item) {
+    return call('POST',  '/' + type, item)
   },
   update: function (type, id, item) {
+    return call('PUT',  '/' + type+ '/' + id, item)
   },
   delete: function (type, id) {
+    return call('DELETE',  '/' + type+ '/' + id)
   },
 }
 

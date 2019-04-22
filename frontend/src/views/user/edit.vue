@@ -1,5 +1,5 @@
 <template>
-  <editor title="Benutzer" type="user" :cfg="cfg">
+  <editor title="Benutzer" type="user">
     <template v-slot:default="$">
       <v-text-field v-model="$.item.name" label="Name"></v-text-field>
       <v-text-field v-model="$.item.email" label="E-Mail"></v-text-field>
@@ -15,13 +15,6 @@
   export default {
     components: {Editor},
     data: () => ({
-      cfg: {
-        columns: [
-          { text: 'Name', value: 'name' },
-          { text: 'Email', value: 'email' },
-          { text: 'Seit', value: 'created_at' },
-        ],
-      },
     }),
   }
 </script>

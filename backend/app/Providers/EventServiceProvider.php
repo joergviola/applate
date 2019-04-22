@@ -20,6 +20,10 @@ class EventServiceProvider extends ServiceProvider
         ],
     ];
 
+    public function shouldDiscoverEvents() {
+        return true;
+    }
+
     /**
      * Register any events for your application.
      *

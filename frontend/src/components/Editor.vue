@@ -28,8 +28,6 @@
     props: {
       'title': {type: String},
       'type': {type: String},
-      'cfg': {type: Object},
-      'id-column': {type: String, default: 'id'},
     },
 
     data: () => ({
@@ -43,7 +41,13 @@
     },
 
     methods: {
-      save() {}
+      save() {
+        if (this.$route.params.id!='new') {
+          api.update(this.type, this.$route.params.id, this.item).then(item => this.$router.push({ name: this.type+'-list'}))
+        } else {
+          api.create(this.type, this.item).then(item => this.$router.push({ name: type+'-list'}))
+        }
+      }
     }
   }
 </script>

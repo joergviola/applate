@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class APIController extends Controller
 {
     public function query(Request $request, $type) {
-        $query = $request->all();
+        $query = $request->json();
         $items = API::query($type, $query);
         return response()->json($items);
     }
@@ -20,14 +20,16 @@ class APIController extends Controller
         return response()->json($item);
     }
 
-    public function craete(Request $request) {
-        $data = [
-            'email' => $request->input('email'),
-            'name' => $request->input('name'),
-            'password' => Hash::make($request->input('password')),
-        ];
-        API::create('user', $data);
-        return response();
+    public function create(Request $request, $type) {
+        $item = $request->json();
+        $id = API::create($type, $item->all());
+        return response()->json(['id'=>$id]);
+    }
+
+    public function update(Request $request, $type, $id) {
+        $item = $request->json();
+        $count = API::update($type, $id, $item->all());
+        return response()->json(['count'=>$count]);;
     }
 
 }
