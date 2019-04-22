@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Events\ApiCreateEvent;
 use App\Events\ApiQueryEvent;
 use App\Events\ApiUpdateEvent;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,7 @@ class API
     }
 
     public static function create($type, $data) {
+        event(new ApiCreateEvent($type, $data));
         return self::provider($type)
             ->insertGetId($data);
     }
