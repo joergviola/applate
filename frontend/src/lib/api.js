@@ -1,4 +1,4 @@
-const base = "http://localhost/gdpr-portal/backend/public/api"
+const base = "http://localhost/gdpr-portal/backend/public/api/v1.0"
 
 function call(method, url, data) {
   const headers = {

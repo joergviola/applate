@@ -6,7 +6,16 @@ use Illuminate\Support\Facades\DB;
 
 class API
 {
+
+    private static function provider($type) {
+        return DB::table($type);
+    }
+
+    public static function read($type, $id) {
+        return self::provider($type)->find($id);
+    }
+
     public static function create($type, $data) {
-        return DB::table($type)->insertGetId($data);
+        return self::provider($type)->insertGetId($data);
     }
 }
