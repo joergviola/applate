@@ -14,7 +14,7 @@ class UserController extends Controller
     public function login(Request $request) {
         $credentials = $request->only('email', 'password');
         if (!Auth::attempt($credentials)) {
-            return response('Forbidden', 403);
+            return response()->json(['message'=>'Access denied'], 403);
         }
         $user = Auth::user();
         $user->token = $user->createToken('Personal')->accessToken;

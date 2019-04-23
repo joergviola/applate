@@ -1,3 +1,5 @@
+import router from '../router'
+
 const base = "http://localhost/gdpr-portal/backend/public/api/v1.0"
 
 function call(method, url, data) {
@@ -22,17 +24,30 @@ function call(method, url, data) {
     .then(response => {
       if (response.status == 200) {
         return response.json()
-      }
-      throw {
-        code: response.status,
-        message: response.statusText
+      } else if (response.status == 401) {
+        storage.remove('user')
+        router.go('/')
+      } else {
+        return response.json().then(r => {
+          throw {
+            status: {
+              code: response.status,
+              text: response.statusText,
+            },
+            message: r.message,
+          }
+        })
       }
     })
 }
 
 const storage = {
   set(key, value) {
-    window.localStorage.setItem(key, JSON.stringify(value));
+    if (!value) {
+      window.localStorage.removeItem(key);
+    } else {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    }
   },
   get(key) {
     const value = window.localStorage.getItem(key);
@@ -49,7 +64,7 @@ const theAPI = {
     return storage.get('user')
   },
   login: function (email, password) {
-    return call('POST', '/../login', {email, password})
+    return call('POST', '/../../login', {email, password})
       .then(user => storage.set('user', user))
   },
   register: function (email, password, name) {

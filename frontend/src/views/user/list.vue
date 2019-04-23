@@ -1,5 +1,5 @@
 <template>
-  <data-table title="Benutzer" type="user" :cfg="cfg"></data-table>
+  <data-table title="Benutzer" type="users" :cfg="cfg"></data-table>
 </template>
 
 <script>
