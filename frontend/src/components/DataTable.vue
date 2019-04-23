@@ -32,7 +32,7 @@
             :search="search"
     >
       <template v-slot:items="props">
-        <td v-for="col in cfg.columns">{{ props.item[col.value] }}</td>
+        <td v-for="col in cfg.columns">{{ prop(props.item, col.value) }}</td>
         <td >
           <router-link :to="{ name: type+'-edit', params: { id: props.item[idColumn] }}"><v-icon
                   small
@@ -52,6 +52,7 @@
 <script>
 
   import api from "../lib/api"
+  import get from "lodash.get"
 
   export default {
     props: {
@@ -67,7 +68,13 @@
     }),
 
     created () {
-      api.find(this.type, {}).then(items => this.items = items)
+      api.find(this.type, this.cfg.query).then(items => this.items = items)
+    },
+
+    methods: {
+      prop(obj, name) {
+        return get(obj,name);
+      }
     },
   }
 </script>

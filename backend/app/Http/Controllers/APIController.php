@@ -10,7 +10,7 @@ class APIController extends Controller
 {
     public function query(Request $request, $type) {
         $query = $request->json();
-        $items = API::query($type, $query);
+        $items = API::query($type, $query->all());
         return response()->json($items);
     }
 

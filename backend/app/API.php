@@ -19,17 +19,38 @@ class API
     public static function query($type, $query) {
         $result = self::provider($type)
             ->get();
-        foreach ($result as $item) {
-            event(new ApiQueryEvent($type, $item));
+        if (isset($query['with'])) {
+            foreach ($query['with'] as $field => $with) {
+                self::with($result, $field, $with);
+            }
         }
+        event(new ApiQueryEvent($type, $result));
         return $result;
     }
 
+    private static function with($result, $field, $with) {
+        $ids = [];
+        $from = $with['from'];
+        foreach ($result as &$item) {
+            $ids[] = $item->$from;
+        }
+        $ids = array_unique($ids);
+        $target = self::provider($with['type'])
+            ->whereIn('id', $ids)
+            ->get()
+            ->keyBy('id');
+
+        foreach ($result as &$item) {
+            $item->$field = $target[$item->$from];
+        }
+    }
+
     public static function read($type, $id) {
-        $result = self::provider($type)
+        $item = self::provider($type)
             ->find($id);
+        $result = [ $item ];
         event(new ApiQueryEvent($type, $result));
-        return $result;
+        return $item;
     }
 
     public static function create($type, $data) {

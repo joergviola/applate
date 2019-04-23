@@ -13,8 +13,13 @@
         columns: [
           { text: 'Name', value: 'name' },
           { text: 'Email', value: 'email' },
-          { text: 'Seit', value: 'created_at' },
+          { text: 'Rolle', value: 'role.name' },
         ],
+        query : {
+          with: {
+            role: {type:'role', from: 'role_id'}
+          }
+        }
       },
     }),
   }

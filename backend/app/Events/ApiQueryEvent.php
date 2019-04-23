@@ -6,10 +6,10 @@ namespace App\Events;
 class ApiQueryEvent
 {
     public $type;
-    public $item;
+    public $items;
 
-    public function __construct($type, &$item) {
+    public function __construct($type, &$items) {
         $this->type = $type;
-        $this->item = &$item;
+        $this->items = &$items;
     }
 }

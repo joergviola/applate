@@ -14,7 +14,9 @@ class UserEventSubscriber
     public function handleQuery(ApiQueryEvent $event) {
         if ($event->type!='users') return;
 
-        unset($event->item->password);
+        foreach ($event->items as $user) {
+            unset($user->password);
+        }
     }
 
     public function handleUpdate(ApiUpdateEvent $event) {
