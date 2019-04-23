@@ -1,7 +1,7 @@
 <template>
   <div class="elevation-10">
     <v-toolbar flat color="white">
-        <router-link :to="{ name: type+'-list'}"><v-icon>arrow_back</v-icon></router-link>
+        <router-link :to="backLink()"><v-icon>arrow_back</v-icon></router-link>
         <v-spacer></v-spacer>
       <v-toolbar-title>{{title}}</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -12,7 +12,7 @@
           </v-card-text>
           <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="default" :to="{ name: type+'-list'}">Zurück</v-btn>
+              <v-btn color="default" :to="backLink()">Zurück</v-btn>
               <v-btn color="primary" @click="save">Speichern</v-btn>
           </v-card-actions>
 
@@ -28,6 +28,7 @@
     props: {
       'title': {type: String},
       'type': {type: String},
+      'back': {type: String},
     },
 
     data: () => ({
@@ -38,14 +39,21 @@
       if (this.$route.params.id!='new') {
         api.get(this.type, this.$route.params.id).then(item => this.item = item)
       }
+      Object.keys(this.$route.params).forEach(key => {
+        if (key=='id') return;
+        this.item[key] = this.$route.params[key];
+      })
     },
 
     methods: {
+      backLink() {
+        return { name: this.back || this.type+'-list'}
+      },
       save() {
         if (this.$route.params.id!='new') {
-          api.update(this.type, this.$route.params.id, this.item).then(item => this.$router.push({ name: this.type+'-list'}))
+          api.update(this.type, this.$route.params.id, this.item).then(item => this.$router.push(this.backLink()))
         } else {
-          api.create(this.type, this.item).then(item => this.$router.push({ name: this.type+'-list'}))
+          api.create(this.type, this.item).then(item => this.$router.push(this.backLink()))
         }
       }
     }

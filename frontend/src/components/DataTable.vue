@@ -12,7 +12,7 @@
       ></v-text-field>
       <v-spacer></v-spacer>
           <v-fab-transition>
-          <v-btn :to="{name:type+'-edit', params: {id: 'new'}}"
+          <v-btn :to="toLink('new')"
                  fab
                  color="primary"
                  dark
@@ -34,7 +34,7 @@
       <template v-slot:items="props">
         <td v-for="col in cfg.columns">{{ prop(props.item, col.value) }}</td>
         <td >
-          <router-link :to="{ name: type+'-edit', params: { id: props.item[idColumn] }}"><v-icon
+          <router-link :to="toLink(props.item[idColumn])"><v-icon
                   small
                   class="mr-2"
           >
@@ -53,12 +53,14 @@
 
   import api from "../lib/api"
   import get from "lodash.get"
+  import clonedeep from "lodash.clonedeep"
 
   export default {
     props: {
       'title': {type: String},
       'type': {type: String},
       'cfg': {type: Object},
+      'to': {type: Object},
       'id-column': {type: String, default: 'id'},
     },
 
@@ -72,6 +74,11 @@
     },
 
     methods: {
+      toLink(id) {
+        const link = this.to ? clonedeep(this.to) :  {name:this.type+'-edit', params: {id: 'new'}}
+        link.params['id'] = id;
+        return link;
+      },
       prop(obj, name) {
         return get(obj,name);
       }

@@ -27,7 +27,7 @@
                   v-else-if="item.children"
                   :key="item.text"
                   v-model="item.model"
-                  :prepend-icon="item.model ? item.icon : item['icon-alt']"
+                  :prepend-icon="item.model ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
                   append-icon=""
           >
             <template v-slot:activator>
@@ -49,7 +49,8 @@
               </v-list-tile-action>
               <v-list-tile-content>
                 <v-list-tile-title>
-                  {{ child.text }}
+                  <router-link v-if="child.route" :to="child.route">{{child.text}}</router-link>
+                  <span v-else>{{ child.text }}</span>
                 </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
@@ -59,8 +60,9 @@
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title v-if="item.route">
-                <router-link :to="item.route">{{item.text}}</router-link>
+              <v-list-tile-title>
+                <router-link v-if="item.route" :to="item.route">{{item.text}}</router-link>
+                <span v-else>{{ item.text }}</span>
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
@@ -120,30 +122,11 @@
       user: api.user(),
       items: [
         { icon: 'contacts', text: 'Verfahren', route: '/verfahren' },
-        { icon: 'person', text: 'Benutzer', route: '/user' },
+        { text: 'Benutzer', children: [
+            { icon: 'person', text: 'Benutzer', route: '/user' },
+            { icon: 'settings', text: 'Rollen & Rechte', route: '/roles' },
+        ] },
         { icon: 'content_copy', text: 'TOM', route: '/about' },
-        {
-          icon: 'keyboard_arrow_up',
-          'icon-alt': 'keyboard_arrow_down',
-          text: 'Labels',
-          model: true,
-          children: [
-            { icon: 'add', text: 'Create label' }
-          ]
-        },
-        {
-          icon: 'keyboard_arrow_up',
-          'icon-alt': 'keyboard_arrow_down',
-          text: 'More',
-          model: false,
-          children: [
-            { text: 'Import' },
-            { text: 'Export' },
-            { text: 'Print' },
-            { text: 'Undo changes' },
-            { text: 'Other contacts' }
-          ]
-        },
         { icon: 'settings', text: 'Settings' },
         { icon: 'chat_bubble', text: 'Send feedback' },
         { icon: 'help', text: 'Help' },

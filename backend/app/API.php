@@ -6,6 +6,7 @@ use App\Events\ApiCreateEvent;
 use App\Events\ApiQueryEvent;
 use App\Events\ApiUpdateEvent;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -54,6 +55,8 @@ class API
     }
 
     public static function create($type, $data) {
+        $user = Auth::user();
+        $data['client_id'] = $user->client_id;
         event(new ApiCreateEvent($type, $data));
         return self::provider($type)
             ->insertGetId($data);
