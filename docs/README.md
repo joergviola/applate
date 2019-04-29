@@ -3,7 +3,7 @@
 ## Features
 
 Applate is a modern Application template that provides
-JAMstack conformity: JavaScript, API and pre-rendered markup. 
+[JAMstack](https://jamstack.org/) conformity: JavaScript, API and pre-rendered markup. 
 
 ## Backend
 
@@ -14,7 +14,7 @@ JAMstack conformity: JavaScript, API and pre-rendered markup.
 1. [Users, Roles & Rights](Users.md)
 1. [Versioning](Versioning.md)
 1. [Notifications](Notifications.md)
-1. [Serverside Business Logic](Events.md)
+1. [Serverside Business Logic](BusinessLogic.md)
 
 ## Frontend
 

@@ -5,21 +5,17 @@ namespace App;
 use App\Events\ApiCreateEvent;
 use App\Events\ApiQueryEvent;
 use App\Events\ApiUpdateEvent;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class API
 {
 
-    private static function provider($type) {
-        return DB::table($type);
-    }
-
     public static function query($type, $query) {
+        $user = self::can($type, 'R');
         $q = self::provider($type);
         $q = self::where($q, $query);
+        $q->where('client_id', $user->client_id);
         $result = $q->get();
         if (isset($query['with'])) {
             foreach ($query['with'] as $field => $with) {
@@ -57,15 +53,17 @@ class API
     }
 
     public static function read($type, $id) {
+        $user = self::can($type, 'R');
         $item = self::provider($type)
             ->find($id);
+        if ($item->client_id != $user->client_id) return null;
         $result = [ $item ];
         event(new ApiQueryEvent($type, $result));
         return $item;
     }
 
     public static function create($type, $data) {
-        $user = Auth::user();
+        $user = self::can($type, 'C');
         $data['client_id'] = $user->client_id;
         event(new ApiCreateEvent($type, $data));
         return self::provider($type)
@@ -73,9 +71,23 @@ class API
     }
 
     public static function update($type, $id, $data) {
+        $user = self::can($type, 'U');
         event(new ApiUpdateEvent($type, $data));
         return self::provider($type)
             ->where('id', $id)
+            ->where('client_id', $user->client_id)
             ->update($data);
+    }
+
+    private static function provider($type) {
+        return DB::table($type);
+    }
+
+    private static function can($type, $action) {
+        $user = Auth::user();
+        if (is_null($user)) throw new PermissionException("No user");
+        $access = Right::canUser($user, $type, $action);
+        if (is_null($access)) throw new PermissionException("Not allowed");
+        return $user;
     }
 }
