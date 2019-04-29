@@ -11,7 +11,7 @@
     $ cp .env.example .env
     ````
 1. Create database and link to it in ```.env```
-1. Instal system in database and create admin user:
+1. Install system in database and create admin user:
     ````
     $ php artisan migrate
     $ php artisan passport:client --personal

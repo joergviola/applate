@@ -25,11 +25,11 @@ class CreateRoles extends Migration
 
         /*
          * Rechte bedeuten:
-         * tables   columns     where               actions
-         * user     *           NULL                CRUD    // Kann alles mit user machen
-         * role     name        NULL                R       // darf nur lesen und bekommt nur die Spalte name
-         * role     name        NULL                U       // darf nur die Spalte name ändern
-         * *        *           org_id=user.org_id  CRUD    // Kann nur Sätze mit der eigenen org_id lesen und ändern
+         * tables       columns     where               actions
+         * user         *           NULL                CRUD    // Kann alles mit user machen
+         * role,user    name        NULL                R       // darf nur lesen und bekommt nur die Spalte name
+         * role         name        NULL                U       // darf nur die Spalte name ändern
+         * *            *           org_id=user.org_id  CRUD    // Kann nur Sätze mit der eigenen org_id lesen und ändern
          */
         Schema::create('right', function (Blueprint $table) {
             $this->standard($table);
@@ -37,7 +37,7 @@ class CreateRoles extends Migration
             $table->string('tables', 255);
             $table->string('columns', 255);
             $table->string('where', 255);
-            $table->string('actions', 4);
+            $table->string('actions', 255);
 
             $table->foreign('role_id')->references('id')->on('role');
         });
