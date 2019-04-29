@@ -10,7 +10,6 @@ class Right extends Model
 
     static function canUser($user, $type, $action) {
         $rights = self::where('role_id', $user->role_id)
-            //->orderBy('sort', 'asc')
             ->get();
         foreach ($rights as $right) {
             if ($right->allows($user, $type, $action)) {

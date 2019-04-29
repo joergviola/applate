@@ -9,12 +9,12 @@ Applate is a modern Application template that provides
 
 1. [Installation](Installation.md)
 1. [Authentication](Authentication.md)
+1. [Users, Roles & Rights](Users.md)
 1. [RESTful API](REST.md)
 1. [Query API](Query.md)
-1. [Users, Roles & Rights](Users.md)
+1. [Serverside Business Logic](BusinessLogic.md)
 1. [Versioning](Versioning.md)
 1. [Notifications](Notifications.md)
-1. [Serverside Business Logic](BusinessLogic.md)
 
 ## Frontend
 

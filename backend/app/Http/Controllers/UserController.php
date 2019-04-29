@@ -11,24 +11,27 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function index() {
+        return view('login');
+    }
+
     public function login(Request $request) {
         $credentials = $request->only('email', 'password');
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message'=>'Access denied'], 403);
+            if ($request->isJson()) {
+                return response()->json(['message'=>'Access denied'], 403);
+            } else {
+                return redirect("/login");
+            }
         }
         $user = Auth::user();
         $user->token = $user->createToken('Personal')->accessToken;
-        return response()->json($user);
-    }
-
-    public function register(Request $request) {
-        $data = [
-            'email' => $request->input('email'),
-            'name' => $request->input('name'),
-            'password' => Hash::make($request->input('password')),
-        ];
-        API::create('user', $data);
-        return response();
+        if ($request->isJson()) {
+            return response()->json($user);
+        } else {
+            session(['token' => $user->token]);
+            return redirect("/schema");
+        }
     }
 
 }

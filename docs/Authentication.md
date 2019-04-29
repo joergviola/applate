@@ -1,18 +1,18 @@
 # Authentication
 
-## Preparation
-
 Authentication provides you with the following:
 * Based upon Laravel Passport
 * Full fledged OAuth2 Server
 * Authentication based on personal access tokens.
+
+## Preparation
 
 During installation, the following command created a client for personal
 authentication:
 ````
 $ php artisan passport:client --personal
 ````
-After that you can start 
+After that you can start creating users and logging in.
 
 
 ## Login 
@@ -20,7 +20,7 @@ After that you can start
 Please keep in mind, that the following process is already implemented in the 
 [JavaScript API](api-js.md) library.
 
-On a users login, a token is created with this client that can be used 
+On a users login, a token is created which this user that can be used 
 to access the REST API. In order to log a user in, perform the following 
 request:
 
@@ -46,7 +46,7 @@ Accept: application/json
 |200|User is logged in|User
 |403|User could not be logged in|{message:reason}
 
-On successful login, the authenticated user is return in JSON format.
+On successful login, the authenticated user is returned in JSON format.
 Its attribute `token` contains the authentication token. 
 It is long lived and supposed to be stored securely on the clients
 behalf. 
