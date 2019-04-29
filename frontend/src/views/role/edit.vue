@@ -16,16 +16,24 @@
 
   export default {
     components: {Editor, DataTable},
-    data: () => ({
-      cfg: {
-        columns: [
-          { text: 'Tables', value: 'tables' },
-          { text: 'Columns', value: 'columns' },
-          { text: 'Where', value: 'where' },
-          { text: 'Actions', value: 'actions' },
-        ],
-      },
-    }),
+    data: function() {
+      return {
+        cfg: {
+          columns: [
+            { text: 'Tables', value: 'tables' },
+            { text: 'Columns', value: 'columns' },
+            { text: 'Where', value: 'where' },
+            { text: 'Actions', value: 'actions' },
+          ],
+                  query : {
+            and: {
+              role_id: this.$route.params.id
+            }
+          }
+
+        },
+      }
+    },
     created () {
     },
 

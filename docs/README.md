@@ -2,18 +2,22 @@
 
 ## Features
 
-Applate is a modern Application template that provides the following features out of the box:
+Applate is a modern Application template that provides
+JAMstack conformity: JavaScript, API and pre-rendered markup. 
 
-* JAMstack conformity: JavaScript, API and pre-rendered markup 
-* RESTful API
-* Token based authentication
-* Powerful SQL to REST mapping
-* Powerful query API
-* Flexible role-based permission model 
-* Versioning
-* Asynchroneous notifications
-* Design-less client development
-
-## Documentation
+## Backend
 
 1. [Installation](Installation.md)
+1. [Authentication](Authentication.md)
+1. [RESTful API](REST.md)
+1. [Query API](Query.md)
+1. [Users, Roles & Rights](Users.md)
+1. [Versioning](Versioning.md)
+1. [Notifications](Notifications.md)
+1. [Serverside Business Logic](Events.md)
+
+## Frontend
+
+1. [JavaScript API](api-js.md)
+1. [Vue Template](vue-template.md)
+1. [Vue Components](components.md)

@@ -43,7 +43,7 @@
         </td>
       </template>
       <template v-slot:no-data>
-        <v-btn color="primary" >Reset</v-btn>
+        No data found
       </template>
     </v-data-table>
   </div>

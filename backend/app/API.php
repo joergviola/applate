@@ -18,8 +18,9 @@ class API
     }
 
     public static function query($type, $query) {
-        $result = self::provider($type)
-            ->get();
+        $q = self::provider($type);
+        $q = self::where($q, $query);
+        $result = $q->get();
         if (isset($query['with'])) {
             foreach ($query['with'] as $field => $with) {
                 self::with($result, $field, $with);
@@ -27,6 +28,15 @@ class API
         }
         event(new ApiQueryEvent($type, $result));
         return $result;
+    }
+
+    private static function where($q, $query) {
+        if (isset($query['and'])) {
+            foreach ($query['and'] as $field => $value) {
+                $q->where($field, $value);
+            }
+        }
+        return $q;
     }
 
     private static function with($result, $field, $with) {
