@@ -17,6 +17,7 @@ class APIController extends Controller
 
     public function read(Request $request, $type, $id) {
         $item = API::read($type, $id);
+        if (is_null($item)) return response()->json("", 404);
         return response()->json($item);
     }
 
@@ -29,7 +30,8 @@ class APIController extends Controller
     public function update(Request $request, $type, $id) {
         $item = $request->json();
         $count = API::update($type, $id, $item->all());
-        return response()->json(['count' => $count]);;
+        if ($count==0)  return response()->json("", 404);
+        return response()->json();
     }
 }
 

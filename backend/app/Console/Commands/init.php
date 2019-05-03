@@ -53,6 +53,14 @@ class init extends Command
                 'name' => 'Admin',
                 'client_id' => $client,
             ]);
+            DB::table('right')->insertGetId([
+                'role:_id' => $role,
+                'client_id' => $client,
+                "tables" => "*",
+                "columns" => "*",
+                "where" => "all",
+                "actions" => "CRUD",
+            ]);
             DB::table('users')->insertGetId([
                 'name' => $name,
                 'email' => $email,

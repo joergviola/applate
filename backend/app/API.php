@@ -64,7 +64,7 @@ class API {
         $user = self::can($type, 'R');
         $item = self::provider($type)
             ->find($id);
-        if ($item->client_id != $user->client_id) return null;
+        if ($item==null || $item->client_id != $user->client_id) return null;
         $result = [ $item ];
         event(new ApiQueryEvent($type, $result));
         return $item;

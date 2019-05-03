@@ -19,6 +19,9 @@ class SchemaController extends Controller
         return [
             'operationId' => 'get'.$type,
             'summary' => "Read a $type by id.",
+            'security' => [
+                'BearerAuth' => [],
+            ],
             'tags' => [$type],
             'parameters' => [
                 [
@@ -32,15 +35,14 @@ class SchemaController extends Controller
                 [
                     0 => 'application/json',
                 ],
-            'responses' =>
-                [
+            'responses' => $this->responses([
                     200 => [
                         'description' => "The specified $type item.",
                         'content' => $this->content([
                             '$ref' => "#/components/schemas/$type",
                         ]),
                     ]
-                ]
+                ], [400, 403, 404])
         ];
     }
 
@@ -60,8 +62,7 @@ class SchemaController extends Controller
                 array (
                     0 => 'application/json',
                 ),
-            'responses' =>
-                [
+            'responses' => $this->responses([
                     200 => [
                         'description' => "$type has been successfully created",
                         'content' => $this->objectContent([
@@ -71,7 +72,7 @@ class SchemaController extends Controller
                             ]
                         ]),
                     ]
-                ]
+                ], [400, 403])
         ];
     }
 
@@ -99,18 +100,12 @@ class SchemaController extends Controller
                 array (
                     0 => 'application/json',
                 ),
-            'responses' =>
-                [
+            'responses' => $this->responses([
                     200 => [
                         'description' => "$type has been successfully updated",
-                        'content' => $this->objectContent([
-                            'count' => [
-                                'type' => 'integer',
-                                'description' => "Number of $type update, always 1"
-                            ]
-                        ]),
+                        'content' => []
                     ]
-                ]
+                ], [400, 403, 404])
         ];
     }
 
@@ -131,18 +126,12 @@ class SchemaController extends Controller
                 array(
                     0 => 'application/json',
                 ),
-            'responses' =>
-                [
+            'responses' => $this->responses([
                     200 => [
                         'description' => "$type has been successfully deleted.",
-                        'content' => $this->objectContent([
-                            'count' => [
-                                'type' => 'integer',
-                                'description' => "Number of $type deleted, always 1"
-                            ]
-                        ]),
+                        'content' => [],
                     ]
-                ]
+                ], [400, 403, 404])
         ];
     }
 
@@ -162,8 +151,7 @@ class SchemaController extends Controller
                 array (
                     0 => 'application/json',
                 ),
-            'responses' =>
-                [
+            'responses' => $this->responses([
                     200 => [
                         'description' => "List of matching object of $type.",
                         'content' => $this->content([
@@ -173,10 +161,46 @@ class SchemaController extends Controller
                             ]
                         ]),
                     ]
-                ]
+                ], [400, 403])
         ];
     }
 
+    private function responses($explicit, $codes) {
+        $standard = [
+            400 => [
+                'description' => "Illegal request",
+                'content' => $this->objectContent([
+                    'message' => [
+                        'type' => 'string',
+                        'description' => "Explanation of the error."
+                    ]
+                ]),
+            ],
+            403 => [
+                'description' => "Not allowed",
+                'content' => $this->objectContent([
+                    'message' => [
+                        'type' => 'string',
+                        'description' => "Explanation of the error."
+                    ]
+                ]),
+            ],
+            404 => [
+                'description' => "Not found.",
+                'content' => $this->objectContent([
+                    'message' => [
+                        'type' => 'string',
+                        'description' => "Explanation of the error."
+                    ]
+                ]),
+            ],
+        ];
+        $result = $explicit;
+        foreach ($codes as $code) {
+            $result[$code] = $standard[$code];
+        }
+        return $result;
+    }
 
     private function objectContent($properties) {
         return $this->content([
@@ -268,6 +292,12 @@ class SchemaController extends Controller
             'paths' => $paths,
             'components' => [
                 'schemas' => $schemas,
+                'securitySchemes' => [
+                    'BearerAuth' => [
+                        'type' => 'http',
+                        'scheme' => 'bearer',
+                    ]
+                ]
             ],
             'consumes' =>
                 array (
