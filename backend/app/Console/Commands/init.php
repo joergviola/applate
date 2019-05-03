@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\API;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class init extends Command
 {
@@ -38,23 +40,26 @@ class init extends Command
      */
     public function handle()
     {
-        $this->info("Setting up system. Remember to run `php artisan migrate´ before");
-        $name = $this->ask('Admin user name?');
-        $email = $this->ask('Admin user email?');
-        $pwd = $this->secret('Admin user password?');
-        $client = API::create('client', [
-            'name' => 'System'
-        ]);
-        $role = API::create('role', [
-            'name' => 'Admin',
-            'client_id' => $client,
-        ]);
-        API::create('users', [
-            'name' => $name,
-            'email' => $email,
-            'password' => $pwd,
-            'client_id' => $client,
-            'role_id' => $role,
-        ]);
+        DB::transaction(function() {
+            $this->info("Setting up system. Remember to run `php artisan migrate´ before");
+            $name = $this->ask('Admin user name?');
+            $email = $this->ask('Admin user email?');
+            $pwd = $this->secret('Admin user password?');
+
+            $client = DB::table('client')->insertGetId([
+                'name' => 'System'
+            ]);
+            $role = DB::table('role')->insertGetId([
+                'name' => 'Admin',
+                'client_id' => $client,
+            ]);
+            DB::table('users')->insertGetId([
+                'name' => $name,
+                'email' => $email,
+                'password' => Hash::make($pwd),
+                'client_id' => $client,
+                'role_id' => $role,
+            ]);
+        });
     }
 }
