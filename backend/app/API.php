@@ -8,8 +8,16 @@ use App\Events\ApiUpdateEvent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class API
-{
+class API {
+    const FORBIDDEN = [
+        'migrations',
+        'oauth_access_tokens',
+        'oauth_auth_codes',
+        'oauth_clients',
+        'oauth_personal_access_clients',
+        'oauth_refresh_tokens',
+        'password_resets',
+    ];
 
     public static function query($type, $query) {
         $user = self::can($type, 'R');

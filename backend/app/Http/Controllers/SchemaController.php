@@ -18,7 +18,7 @@ class SchemaController extends Controller
     private function get($type) {
         return [
             'operationId' => 'get'.$type,
-            'summary' => 'Show API version details',
+            'summary' => "Read a $type by id.",
             'tags' => [$type],
             'parameters' => [
                 [
@@ -36,13 +36,9 @@ class SchemaController extends Controller
                 [
                     200 => [
                         'description' => "The specified $type item.",
-                        'content' => [
-                            'application/json' => [
-                                'schema' => [
-                                    '$ref' => "#/components/schemas/$type",
-                                ]
-                            ]
-                        ]
+                        'content' => $this->content([
+                            '$ref' => "#/components/schemas/$type",
+                        ]),
                     ]
                 ]
         ];
@@ -51,15 +47,14 @@ class SchemaController extends Controller
     private function post($type) {
         return [
             'operationId' => 'post'.$type,
-            'summary' => 'Show API version details',
+            'summary' => "Create a new $type",
             'tags' => [$type],
-            'parameters' => [
-                [
-                    'name' => 'id',
-                    'type' => 'integer',
-                    'in' => 'path',
-                    'description' => "Id of the $type to read.",
-                ],
+            'requestBody' => [
+                'description' => "$type to create.",
+                'required' => true,
+                'content' => $this->content([
+                    '$ref' => "#/components/schemas/$type",
+                ]),
             ],
             'produces' =>
                 array (
@@ -68,14 +63,133 @@ class SchemaController extends Controller
             'responses' =>
                 [
                     200 => [
-                        'description' => '200 response',
-                        'examples' => [
-                            'a' => 'a',
-                            'b' => 'a',
-                            'c' => 'a',
-                        ]
+                        'description' => "$type has been successfully created",
+                        'content' => $this->objectContent([
+                            'id' => [
+                                'type' => 'integer',
+                                'description' => "Id of the $type created"
+                            ]
+                        ]),
                     ]
                 ]
+        ];
+    }
+
+    private function put($type) {
+        return [
+            'operationId' => 'put'.$type,
+            'summary' => "Update a $type",
+            'tags' => [$type],
+            'parameters' => [
+                [
+                    'name' => 'id',
+                    'type' => 'integer',
+                    'in' => 'path',
+                    'description' => "Id of the $type to update.",
+                ],
+            ],
+            'requestBody' => [
+                'description' => "$type to update.",
+                'required' => true,
+                'content' => $this->content([
+                    '$ref' => "#/components/schemas/$type",
+                ]),
+            ],
+            'produces' =>
+                array (
+                    0 => 'application/json',
+                ),
+            'responses' =>
+                [
+                    200 => [
+                        'description' => "$type has been successfully updated",
+                        'content' => $this->objectContent([
+                            'count' => [
+                                'type' => 'integer',
+                                'description' => "Number of $type update, always 1"
+                            ]
+                        ]),
+                    ]
+                ]
+        ];
+    }
+
+    private function delete($type) {
+        return [
+            'operationId' => 'delete' . $type,
+            'summary' => "Delete a $type",
+            'tags' => [$type],
+            'parameters' => [
+                [
+                    'name' => 'id',
+                    'type' => 'integer',
+                    'in' => 'path',
+                    'description' => "Id of the $type to delete.",
+                ],
+            ],
+            'produces' =>
+                array(
+                    0 => 'application/json',
+                ),
+            'responses' =>
+                [
+                    200 => [
+                        'description' => "$type has been successfully deleted.",
+                        'content' => $this->objectContent([
+                            'count' => [
+                                'type' => 'integer',
+                                'description' => "Number of $type deleted, always 1"
+                            ]
+                        ]),
+                    ]
+                ]
+        ];
+    }
+
+    private function query($type) {
+        return [
+            'operationId' => 'query'.$type,
+            'summary' => "Query $type",
+            'tags' => [$type],
+            'requestBody' => [
+                'description' => "Query.",
+                'required' => true,
+                'content' => $this->content([
+                    '$ref' => "#/components/schemas/query",
+                ]),
+            ],
+            'produces' =>
+                array (
+                    0 => 'application/json',
+                ),
+            'responses' =>
+                [
+                    200 => [
+                        'description' => "List of matching object of $type.",
+                        'content' => $this->content([
+                            'type' => 'array',
+                            'items' => [
+                                '$ref' => "#/components/schemas/$type"
+                            ]
+                        ]),
+                    ]
+                ]
+        ];
+    }
+
+
+    private function objectContent($properties) {
+        return $this->content([
+            'type' => 'object',
+            'properties' => $properties,
+        ]);
+    }
+
+    private function content($content) {
+        return [
+            'application/json' => [
+                'schema' => $content,
+            ]
         ];
     }
 
@@ -88,8 +202,8 @@ class SchemaController extends Controller
     public function schema(Request $request) {
 
         $connection = Schema::getConnection();
-
-        $tables = $connection->select("select table_name as name, table_comment as comment from information_schema.tables where table_schema=?", [$connection->getDatabaseName()]);
+        $forbidden = "'" . implode("','", API::FORBIDDEN) . "'";
+        $tables = $connection->select("select table_name as name, table_comment as comment from information_schema.tables where table_schema=? and table_name not in($forbidden)", [$connection->getDatabaseName()]);
 
         $paths = [];
         $schemas = [];
@@ -97,12 +211,22 @@ class SchemaController extends Controller
         foreach ($tables as $table) {
             $type = $table->name;
             $columns = $this->getColumns($connection, $type);
-            $path = [];
-            $path['get'] = $this->get($type, $columns);
-            $path['post'] = $this->post($type);
-            $paths["/$type/{id}"] = $path;
-            $schemas[$type] = $this->model($type, $columns);
+            $paths["/$type/{id}"] = [
+                'get' => $this->get($type),
+                'put' => $this->put($type),
+                'delete' => $this->delete($type),
+            ];
+            $paths["/$type"] = [
+                'post' => $this->post($type),
+            ];
+            $paths["/$type/query"] = [
+                'post' => $this->query($type),
+            ];
+            $schemas[$type] = $this->model($columns);
         }
+        $schemas['query'] = $this->model([
+
+        ]);
 
         $schema = array (
             'openapi' => '3.0.0',
