@@ -15,7 +15,7 @@ class SchemaController extends Controller
     }
 
 
-    private function schemaGet($type, $columns) {
+    private function get($type) {
         return [
             'operationId' => 'get'.$type,
             'summary' => 'Show API version details',
@@ -39,8 +39,7 @@ class SchemaController extends Controller
                         'content' => [
                             'application/json' => [
                                 'schema' => [
-                                    'type' => 'object',
-                                    'properties' => $columns,
+                                    '$ref' => "#/components/schemas/$type",
                                 ]
                             ]
                         ]
@@ -49,7 +48,7 @@ class SchemaController extends Controller
         ];
     }
 
-    private function schemaPost($type) {
+    private function post($type) {
         return [
             'operationId' => 'post'.$type,
             'summary' => 'Show API version details',
@@ -80,6 +79,12 @@ class SchemaController extends Controller
         ];
     }
 
+    private function model($columns) {
+        return [
+            'properties' => $columns
+        ];
+    }
+
     public function schema(Request $request) {
 
         $connection = Schema::getConnection();
@@ -87,14 +92,16 @@ class SchemaController extends Controller
         $tables = $connection->select("select table_name as name, table_comment as comment from information_schema.tables where table_schema=?", [$connection->getDatabaseName()]);
 
         $paths = [];
+        $schemas = [];
 
         foreach ($tables as $table) {
             $type = $table->name;
             $columns = $this->getColumns($connection, $type);
             $path = [];
-            $path['get'] = $this->schemaGet($type, $columns);
-            $path['post'] = $this->schemaPost($type);
+            $path['get'] = $this->get($type, $columns);
+            $path['post'] = $this->post($type);
             $paths["/$type/{id}"] = $path;
+            $schemas[$type] = $this->model($type, $columns);
         }
 
         $schema = array (
@@ -108,6 +115,9 @@ class SchemaController extends Controller
                 ['url' => 'http://'.$request->getHost() . $request->getBaseUrl() . '/api/v1.0'],
             ],
             'paths' => $paths,
+            'components' => [
+                'schemas' => $schemas,
+            ],
             'consumes' =>
                 array (
                     0 => 'application/json',
