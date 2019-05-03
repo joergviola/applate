@@ -223,13 +223,51 @@ class SchemaController extends Controller
         ];
     }
 
+    private function login() {
+        return [
+            'operationId' => 'login',
+            'summary' => "Sign in a user",
+            'tags' => ['authorisation'],
+            'requestBody' => [
+                'description' => "Credentials for sign-in.",
+                'required' => true,
+                'content' => $this->objectContent([
+                    'email' => [
+                        'type' => 'string',
+                        'description' => "E-Mail of the user."
+                    ],
+                    'password' => [
+                        'type' => 'string',
+                        'description' => "Password of the user, clear text."
+                    ],
+                ]),
+            ],
+            'produces' =>
+                array (
+                    0 => 'application/json',
+                ),
+            'responses' => $this->responses([
+                200 => [
+                    'description' => "Successful login. The logged in user is return with the token property set. It contains a newly created authentication token.",
+                    'content' => $this->content([
+                        '$ref' => "#/components/schemas/users",
+                    ]),
+                ]
+            ], [400, 403])
+        ];
+    }
+
+
+
     public function schema(Request $request) {
 
         $connection = Schema::getConnection();
         $forbidden = "'" . implode("','", API::FORBIDDEN) . "'";
         $tables = $connection->select("select table_name as name, table_comment as comment from information_schema.tables where table_schema=? and table_name not in($forbidden)", [$connection->getDatabaseName()]);
 
-        $paths = [];
+        $paths = ['/login' => [
+            'post' => $this->login()
+        ]];
         $schemas = [];
 
         foreach ($tables as $table) {
