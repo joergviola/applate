@@ -16,9 +16,9 @@ $ git merge upstream/master
     ````
     $ cd backend
     $ composer install
+    $ cp .env.example .env
     $ php artisan key:generate
     $ php artisan passport:keys
-    $ cp .env.example .env
     ````
 1. Create database and link to it in ```.env```
 1. Install system in database and create admin user:
