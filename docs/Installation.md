@@ -1,10 +1,20 @@
 # Installation
 
+Create your repo on github, then:
+
+````
+$ git clone <your-repo>
+$ cd <your-repo>
+$ git remote add upstream https://github.com/joergviola/applate.git
+$ git fetch upstream
+$ git merge upstream/master
+````
+
 ## Backend
-1. Basic installation:
+
+1. Install the backend:
     ````
-    $ git clone https://github.com/joergviola/applate.git your-name
-    $ cd your-name/backend
+    $ cd backend
     $ composer install
     $ php artisan key:generate
     $ php artisan passport:keys
@@ -17,3 +27,13 @@
     $ php artisan passport:client --personal
     $ php artisan init
     ````
+
+## Upgrade from applate
+
+In your repo:
+
+````
+git fetch upstream
+git merge upstream/master
+````
+ 
