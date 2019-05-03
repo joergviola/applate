@@ -169,7 +169,7 @@ class SchemaController extends Controller
                         'content' => $this->content([
                             'type' => 'array',
                             'items' => [
-                                '$ref' => "#/components/schemas/$type"
+                                '$ref' => "#/components/schemas/query"
                             ]
                         ]),
                     ]
@@ -225,7 +225,34 @@ class SchemaController extends Controller
             $schemas[$type] = $this->model($columns);
         }
         $schemas['query'] = $this->model([
-
+            'and' => [
+                'type' => 'object',
+                'properties' => [
+                    'any' => [
+                        'type' => 'any',
+                        'description' => 'Each property of the type possible, AND-connected'
+                    ]
+                ],
+            ],
+            'with' => [
+                'type' => 'object',
+                'properties' => [
+                    'new-field' => [
+                        'type' => 'object',
+                        'description' => 'The new field is set in each instance found based on the query specified in the aatributes',
+                        'properties' => [
+                            'type' => [
+                                'type' => 'string',
+                                'description' => 'The type, the new field is to be filled from',
+                            ],
+                            'from' => [
+                                'type' => 'string',
+                                'description' => 'The field in the instance holding the id value for the reference',
+                            ],
+                        ],
+                    ]
+                ],
+            ],
         ]);
 
         $schema = array (
