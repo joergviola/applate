@@ -88,8 +88,8 @@ const theAPI = {
   log: function (type, id) {
     return call('GET',  '/' + type+ '/' + id + '/log')
   },
-  restore: function (type, id, log) {
-    return call('PUT',  '/' + type+ '/' + id + '/restore/' + log)
+  restore: function (type, log) {
+    return call('PUT',  '/' + type + '/restore/' + log)
   },
   getNotifications: function () {
     return call('GET',  '/notifications')

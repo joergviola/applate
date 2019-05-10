@@ -52,7 +52,7 @@
     },
     methods: {
       restore: function(item) {
-        api.restore(this.$route.params.type, this.$route.params.id, item.id)
+        api.restore(this.$route.params.type, item.id)
                 .then(result => api.log(this.$route.params.type, this.$route.params.id))
                 .then(items => this.items = items);
       }

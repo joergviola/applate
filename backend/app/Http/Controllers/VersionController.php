@@ -24,9 +24,10 @@ class VersionController extends Controller
         return response()->json($items);
     }
 
-    public function restore(Request $request, $type, $id, $log) {
+    public function restore(Request $request, $type, $log) {
         $version = API::read('log', $log);
         $content = json_decode($version->content, true);
+        $id = $content['id'];
         API::update($type, $id, $content);
         return response()->json();
     }
