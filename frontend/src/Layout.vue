@@ -97,7 +97,34 @@
       </v-btn>
       <v-btn icon large>
         <v-avatar size="32px" tile>
-          {{user.name}} ({{notifications.length}})
+          {{user.name}}
+          <v-menu bottom right>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                      dark
+                      icon
+                      v-on="on"
+              >
+                ({{notifications.length}})
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-tile
+                      v-for="item in notifications"
+                      :key="item.id"
+                      @click=""
+              >
+                <v-list-tile-title>
+                  <router-link :to="{name:item.type+'-edit', params: {id: item.item_id}}">
+                  {{ item.operation }}
+                  {{ item.type }}:
+                  {{ item.item_id }}
+                  </router-link>
+                </v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
         </v-avatar>
       </v-btn>
     </v-toolbar>
