@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\API;
 use App\Events\ApiCreateEvent;
 use App\Events\ApiQueryEvent;
 use App\Events\ApiUpdateEvent;
@@ -12,17 +13,26 @@ class VersioningEventSubscriber
 {
 
     public function handleUpdate(ApiUpdateEvent $event) {
-        $json = json_encode($event->item);
-
+        API::provider('log')->insert([
+            'client_id' => $event->user['client_id'],
+            'created_at' => new \DateTime(),
+            'user_id' => $event->user['id'],
+            'type' => $event->type,
+            'item_id' => $event->id,
+            'operation' => 'U',
+            'content' => json_encode($event->item),
+        ]);
     }
 
     public function handleCreate(ApiCreateEvent $event) {
-        if ($event->type!='users') return;
-
-        if (!empty($event->item['password'])) {
-            $event->item['password'] = Hash::make($event->item['password']);
-        } else {
-            unset($event->item['password']);
-        }
+        API::provider('log')->insert([
+            'client_id' => $event->user['client_id'],
+            'created_at' => new \DateTime(),
+            'user_id' => $event->user['id'],
+            'type' => $event->type,
+            'item_id' => $event->id,
+            'operation' => 'C',
+            'content' => json_encode($event->item),
+        ]);
     }
 }

@@ -23,7 +23,7 @@ class Right extends Model
     }
 
     public function allows($user, $type, $action) {
-        if (!strpos($this->actions, $action)) return false;
+        if (strpos($this->actions, $action)===FALSE) return false;
         if ($this->tables!='*') {
             $tables = explode(',', $this->tables);
             if (!in_array($type, $tables)) return false;

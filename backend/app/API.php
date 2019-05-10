@@ -30,7 +30,7 @@ class API {
                 self::with($result, $field, $with);
             }
         }
-        event(new ApiQueryEvent($type, $result));
+        event(new ApiQueryEvent($user, $type, $result));
 
         return $result;
     }
@@ -67,24 +67,25 @@ class API {
             ->find($id);
         if ($item==null || $item->client_id != $user->client_id) return null;
         $result = [ $item ];
-        event(new ApiQueryEvent($type, $result));
+        event(new ApiQueryEvent($user, $type, $result));
         return $item;
     }
 
     public static function create($type, $data) {
         $user = self::can($type, 'C');
         $data['client_id'] = $user->client_id;
-        return DB::transaction(function() use ($type, $data) {
-            event(new ApiCreateEvent($type, $data));
-            return self::provider($type)
+        return DB::transaction(function() use ($user, $type, $data) {
+            $id = self::provider($type)
                 ->insertGetId($data);
+            event(new ApiCreateEvent($user, $type, $id, $data));
+            return $id;
         });
     }
 
     public static function update($type, $id, $data) {
         $user = self::can($type, 'U');
         return DB::transaction(function() use ($type, $id, $data, $user) {
-            event(new ApiUpdateEvent($type, $data));
+            event(new ApiUpdateEvent($user, $type, $id, $data));
             return self::provider($type)
                 ->where('id', $id)
                 ->where('client_id', $user->client_id)
@@ -92,7 +93,7 @@ class API {
         });
     }
 
-    private static function provider($type) {
+    public static function provider($type) {
         return DB::table($type);
     }
 
