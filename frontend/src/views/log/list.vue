@@ -2,6 +2,8 @@
   <v-data-table
           :headers="headers"
           :items="items"
+          hide-actions
+          disable-initial-sort
   >
     <template v-slot:items="props">
       <td >{{ props.item.created_at }}</td>
@@ -27,7 +29,7 @@
       api.log(this.$route.params.type, this.$route.params.id).then(items => {
         this.items = items
         if (items.length>0) {
-          Object.keys(items[0].content).forEach(k => this.headers.push({text: k, value: k}));
+          Object.keys(items[0].content).forEach(k => this.headers.push({text: k, value: k, sortable: false}));
         }
         this.headers.push({text: "", value: ''})
       })
@@ -41,16 +43,18 @@
         },
 
       headers: [
-          { text: 'Zeitpunkt', value: 'name' },
-          { text: 'Von', value: 'email' },
-          { text: 'Operation', value: 'role.name' },
+          { text: 'Zeitpunkt', value: 'name', sortable: false },
+          { text: 'Von', value: 'email', sortable: false },
+          { text: 'Operation', value: 'role.name', sortable: false },
       ],
       items: [],
       }
     },
     methods: {
       restore: function(item) {
-        api.restore(this.$route.params.type, this.$route.params.id, item.id);
+        api.restore(this.$route.params.type, this.$route.params.id, item.id)
+                .then(result => api.log(this.$route.params.type, this.$route.params.id))
+                .then(items => this.items = items);
       }
     }
   }
