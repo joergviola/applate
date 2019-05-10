@@ -24,7 +24,7 @@ Route::group(['prefix' => 'v1.0' , 'middleware' => ['auth:api']], function() {
     Route::get('/{type}/{id}/log', 'VersionController@log');
     Route::put('/{type}/{id}/restore/{log}', 'VersionController@restore');
 
-    Route::get('/notifications', 'APIController@log');
-    Route::delete('/notifications/clear', 'APIController@log');
+    Route::get('/notifications', 'NotificationController@index');
+    Route::delete('/notifications/clear', 'NotificationController@clear');
 
 });

@@ -6,9 +6,6 @@ namespace App\Http\Controllers;
 use App\API;
 use Illuminate\Http\Request;
 
-/*
- * Errors are handled in the HandleError Middleware
- */
 class VersionController extends Controller
 {
     public function log(Request $request, $type, $id) {

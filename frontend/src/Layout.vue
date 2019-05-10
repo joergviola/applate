@@ -97,7 +97,7 @@
       </v-btn>
       <v-btn icon large>
         <v-avatar size="32px" tile>
-          {{user.name}}
+          {{user.name}} ({{notifications.length}})
         </v-avatar>
       </v-btn>
     </v-toolbar>
@@ -120,6 +120,7 @@
       dialog: false,
       drawer: null,
       user: api.user(),
+      notifications: [],
       items: [
         { icon: 'contacts', text: 'Verfahren', route: '/verfahren' },
         { text: 'Benutzer', children: [
@@ -136,6 +137,9 @@
     }),
     props: {
       source: String
+    },
+    created() {
+      api.getNotifications().then(items => this.notifications = items)
     }
   }
 </script>
