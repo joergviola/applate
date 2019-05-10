@@ -30,6 +30,7 @@ class CreateNotification extends Migration
                 $table->string('type')->comment('The type operated on.');
                 $table->integer('item_id')->unsigned()->comment('The id of the item operated on.');
                 $table->string('operation')->comment('The operation to be notified about.');
+                $table->unique(['user_id', 'type', 'item_id', 'operation']);
             }
         );
     }

@@ -91,6 +91,12 @@ const theAPI = {
   restore: function (type, id, log) {
     return call('PUT',  '/' + type+ '/' + id + '/restore/' + log)
   },
+  getNotifications: function () {
+    return call('GET',  '/notifications')
+  },
+  createNotifications: function () {
+    return call('DELETE',  '/notifications/clear')
+  },
 }
 
 export default theAPI;
