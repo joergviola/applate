@@ -11,6 +11,7 @@
               <slot v-bind:item="item"></slot>
           </v-card-text>
           <v-card-actions>
+              <v-btn color="default" :to="history()">Historie</v-btn>
               <v-spacer></v-spacer>
               <v-btn color="default" :to="backLink()">Zurück</v-btn>
               <v-btn color="primary" @click="save">Speichern</v-btn>
@@ -46,6 +47,9 @@
     },
 
     methods: {
+      history() {
+        return { name: 'log-list', params: {'type': this.type, id: this.$route.params.id}}
+      },
       backLink() {
         return { name: this.back || this.type+'-list'}
       },

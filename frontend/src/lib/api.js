@@ -85,6 +85,12 @@ const theAPI = {
   delete: function (type, id) {
     return call('DELETE',  '/' + type+ '/' + id)
   },
+  log: function (type, id) {
+    return call('GET',  '/' + type+ '/' + id + '/log')
+  },
+  restore: function (type, id, log) {
+    return call('PUT',  '/' + type+ '/' + id + '/restore/' + log)
+  },
 }
 
 export default theAPI;

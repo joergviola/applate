@@ -80,7 +80,12 @@
         return link;
       },
       prop(obj, name) {
-        return get(obj,name);
+        let value = get(obj,name);
+        const col = this.cfg.columns.find(c => c.value==name);
+        if (col.map) {
+          value = col.map(value);
+        }
+        return value;
       }
     },
   }

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from './Layout.vue'
+import LogList from './views/log/list.vue'
 import UserList from './views/user/list.vue'
 import UserEdit from './views/user/edit.vue'
 import RoleList from './views/role/list.vue'
@@ -27,6 +28,7 @@ export default new Router({
         { path: '/roles', name: 'role-list', component: RoleList },
         { path: '/role/:id', name: 'role-edit', component: RoleEdit },
         { path: '/role/:role_id/right/:id', name: 'right-edit', component: RightEdit },
+        { path: '/log/:type/:id', name: 'log-list', component: LogList },
       ] },
     { path: '/public/verfahren/:id', name: 'public-verfahren-edit', component: Verfahren },
     { path: '/public/datenschutz/:role', name: 'datenschutz', component: Cockpit },
