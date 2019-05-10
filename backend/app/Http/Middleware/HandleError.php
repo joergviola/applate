@@ -22,7 +22,7 @@ class HandleError
         if ($exception instanceof PermissionException) {
             return response()->json(['message'=>$exception->getMessage()], 403);
         } else if ($exception instanceof \Exception) {
-            return response($exception->getMessage(), 400);
+            return response()->json(['message'=>$exception->getMessage()], 400);
         }
         return $response;
     }

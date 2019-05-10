@@ -1,6 +1,6 @@
 import router from '../router'
 
-const base = "http://localhost/gdpr-portal/backend/public/api/v1.0"
+const base = "http://localhost/applate/backend/public/api/v1.0"
 
 function call(method, url, data) {
   const headers = {

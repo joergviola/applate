@@ -6,12 +6,14 @@ namespace App\Http\Controllers;
 use App\API;
 use Illuminate\Http\Request;
 
+/*
+ * Errors are handled in the HandleError Middleware
+ */
 class APIController extends Controller
 {
     public function query(Request $request, $type) {
         $query = $request->json();
         $items = API::query($type, $query->all());
-        if (is_null($items)) return response("No user", 403);
         return response()->json($items);
     }
 

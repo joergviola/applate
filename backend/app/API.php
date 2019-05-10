@@ -31,6 +31,7 @@ class API {
             }
         }
         event(new ApiQueryEvent($type, $result));
+
         return $result;
     }
 
@@ -73,18 +74,22 @@ class API {
     public static function create($type, $data) {
         $user = self::can($type, 'C');
         $data['client_id'] = $user->client_id;
-        event(new ApiCreateEvent($type, $data));
-        return self::provider($type)
-            ->insertGetId($data);
+        return DB::transaction(function() use ($type, $data) {
+            event(new ApiCreateEvent($type, $data));
+            return self::provider($type)
+                ->insertGetId($data);
+        });
     }
 
     public static function update($type, $id, $data) {
         $user = self::can($type, 'U');
-        event(new ApiUpdateEvent($type, $data));
-        return self::provider($type)
-            ->where('id', $id)
-            ->where('client_id', $user->client_id)
-            ->update($data);
+        return DB::transaction(function() use ($type, $id, $data, $user) {
+            event(new ApiUpdateEvent($type, $data));
+            return self::provider($type)
+                ->where('id', $id)
+                ->where('client_id', $user->client_id)
+                ->update($data);
+        });
     }
 
     private static function provider($type) {
@@ -92,10 +97,11 @@ class API {
     }
 
     private static function can($type, $action) {
+        if (in_array($type, self::FORBIDDEN)) throw new PermissionException("Illegal type");
         $user = Auth::user();
         if (is_null($user)) throw new PermissionException("No user");
         $access = Right::canUser($user, $type, $action);
-        if (is_null($access)) throw new PermissionException("Not allowed");
+        if (is_null($access)) throw new PermissionException("Access denied");
         return $user;
     }
 }

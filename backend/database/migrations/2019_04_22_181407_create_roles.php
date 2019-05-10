@@ -14,13 +14,13 @@ class CreateRoles extends Migration
     public function up()
     {
         Schema::create('client', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
+            $table->increments('id')->comment('Unique id of the item.');
+            $table->string('name')->comment('Name of the client.');
         });
 
         Schema::create('role', function (Blueprint $table) {
             $this->standard($table);
-            $table->string('name')->unique();
+            $table->string('name')->unique()->comment('Name of the role.');
         });
 
         /*
@@ -33,18 +33,18 @@ class CreateRoles extends Migration
          */
         Schema::create('right', function (Blueprint $table) {
             $this->standard($table);
-            $table->integer('role_id')->unsigned();
-            $table->string('tables', 255);
-            $table->string('columns', 255);
-            $table->string('where', 255);
-            $table->string('actions', 255);
+            $table->integer('role_id')->unsigned()->comment('Role this right belongs to.');
+            $table->string('tables', 255)->comment('Table names, comma seperated, or * this right acts upon.');
+            $table->string('columns', 255)->comment('Column names, comma seperated, or * this right acts upon.');
+            $table->string('where', 255)->comment('Row clause this right acts upon.');
+            $table->string('actions', 255)->comment('Actions for this right, comma seperated, namely C,R,U and D or custom ones.');
 
             $table->foreign('role_id')->references('id')->on('role');
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('client_id')->unsigned();
-            $table->integer('role_id')->unsigned();
+            $table->integer('client_id')->unsigned()->comment('Client of the user.');
+            $table->integer('role_id')->unsigned()->comment('Role of the user.');
 
             $table->foreign('client_id')->references('id')->on('client');
             $table->foreign('role_id')->references('id')->on('role');
@@ -70,8 +70,8 @@ class CreateRoles extends Migration
     }
 
     protected function standard($table, $foreign=true) {
-        $table->increments('id');
-        $table->integer('client_id')->unsigned();
+        $table->increments('id')->comment('Unique id of the item.');
+        $table->integer('client_id')->unsigned()->comment('Client the item lives in.');
         if ($foreign) {
             $table->foreign('client_id')->references('id')->on('client');
         }
