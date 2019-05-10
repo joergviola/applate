@@ -95,7 +95,7 @@ const theAPI = {
     return call('GET',  '/notifications')
   },
   createNotifications: function () {
-    return call('DELETE',  '/notifications/clear')
+    return call('DELETE',  '/notifications')
   },
 }
 

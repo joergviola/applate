@@ -11,6 +11,10 @@ Old versions of an item can be retrieved via this call:
 ````
 GET /{type}/{id}/log
 ````
+or
+````
+api.log(type, id)
+````
 
 |Parameter|Description|Example|
 |---|---|---|
@@ -38,3 +42,10 @@ If you have a ``log-id``, you can restore this version of the item by:
 ````
 PUT /{type}/restore/{log-id}
 ````
+or
+````
+api.restore(type, logId)
+````
+
+The result is always empty. A new log entry will of course 
+be created.
