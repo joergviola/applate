@@ -132,7 +132,9 @@
     <v-content>
       <v-container fluid fill-height>
         <v-layout justify-center align-center>
-          <router-view></router-view>
+          <v-flex xs12 md10>
+            <router-view></router-view>
+          </v-flex>
         </v-layout>
       </v-container>
     </v-content>
