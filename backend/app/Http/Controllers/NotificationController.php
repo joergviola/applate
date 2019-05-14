@@ -13,8 +13,11 @@ class NotificationController extends Controller
         $user = Auth::user();
         $items = API::query('notification', [
             'and' => [
-                'user_id' => $user->id,
+                'listener_id' => $user->id,
             ],
+            'with' => [
+                'user' => ['type' => 'users', 'from' => 'user_id']
+            ]
         ]);
         return response()->json($items);
     }
@@ -23,7 +26,7 @@ class NotificationController extends Controller
         $user = Auth::user();
         API::delete('notification', [
             'and' => [
-                'user_id' => $user->id,
+                'listener_id' => $user->id,
             ],
         ]);
         return response()->json();

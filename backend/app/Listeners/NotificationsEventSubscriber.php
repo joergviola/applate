@@ -14,30 +14,32 @@ class NotificationsEventSubscriber
 {
 
     public function handleUpdate(ApiUpdateEvent $event) {
-        $this->notify($event->user['client_id'], $event->type, $event->id, 'U');
+        $this->notify($event->user, $event->type, $event->id, 'U');
     }
 
     public function handleCreate(ApiCreateEvent $event) {
-        $this->notify($event->user['client_id'], $event->type, $event->id, 'C');
+        $this->notify($event->user, $event->type, $event->id, 'C');
     }
 
-    private function notify($client_id, $type, $id, $operation) {
+    private function notify($user, $type, $id, $operation) {
         $listeners = API::provider('listen')
             ->where('type', $type)
             ->where('item_id', $id)
-            ->where('operation', $operation)
             ->get();
         foreach ($listeners as $listener) {
-            try {
-                API::provider('notification')->insert([
-                    'client_id' => $client_id,
-                    'user_id' => $listener->user_id,
-                    'type' => $type,
-                    'item_id' => $id,
-                    'operation' => $operation,
-                ]);
-            } catch (QueryException $e) {
-                // Notification already there, doesn't matter...
+            if (strstr($listener->operation, $operation)!==FALSE) {
+                try {
+                    API::provider('notification')->insert([
+                        'client_id' => $user['client_id'],
+                        'listener_id' => $listener->listener_id,
+                        'user_id' => $user['id'],
+                        'type' => $type,
+                        'item_id' => $id,
+                        'operation' => $operation,
+                    ]);
+                } catch (QueryException $e) {
+                    // Notification already there, doesn't matter...
+                }
             }
         }
     }

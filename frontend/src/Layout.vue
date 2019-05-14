@@ -119,7 +119,8 @@
                   <router-link :to="{name:item.type+'-edit', params: {id: item.item_id}}">
                   {{ item.operation }}
                   {{ item.type }}:
-                  {{ item.item_id }}
+                  {{ item.item_id }} by
+                  {{ item.user.name }}
                   </router-link>
                 </v-list-tile-title>
               </v-list-tile>

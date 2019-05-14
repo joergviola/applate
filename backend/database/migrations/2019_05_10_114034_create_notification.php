@@ -17,7 +17,7 @@ class CreateNotification extends Migration
     {
         StandardTable::create('listen', 'Registrations of users for notifications.',
             function (Blueprint $table) {
-                $table->integer('user_id')->unsigned()->comment('The user receiving notifications.');
+                $table->integer('listener_id')->unsigned()->comment('The user receiving notifications.');
                 $table->string('type')->comment('The type to listen on.');
                 $table->integer('item_id')->nullable()->unsigned()->comment('The id of the item to listen on.');
                 $table->string('operation')->comment('The operations of interest: CUD');
@@ -26,7 +26,8 @@ class CreateNotification extends Migration
 
         StandardTable::create('notification', 'User notification about an operation on an item.',
             function (Blueprint $table) {
-                $table->integer('user_id')->unsigned()->comment('The user receiving the notification.');
+                $table->integer('listener_id')->unsigned()->comment('The user receiving the notification.');
+                $table->integer('user_id')->unsigned()->comment('The user performing the operation.');
                 $table->string('type')->comment('The type operated on.');
                 $table->integer('item_id')->unsigned()->comment('The id of the item operated on.');
                 $table->string('operation')->comment('The operation to be notified about.');
