@@ -11,7 +11,7 @@ Old versions of an item can be retrieved via this call:
 ````
 GET /{type}/{id}/log
 ````
-or
+or using the JavaScript API
 ````
 api.log(type, id)
 ````
@@ -42,7 +42,7 @@ If you have a ``log-id``, you can restore this version of the item by:
 ````
 PUT /{type}/restore/{log-id}
 ````
-or
+or using the JavaScript API
 ````
 api.restore(type, logId)
 ````

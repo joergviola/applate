@@ -23,7 +23,7 @@ To retrieve all current notifications for the signed-in user, simply call
 ````
 GET /notifications
 ````
-or
+or using the JavaScript API
 ````
 api.getNotifications()
 ````
@@ -48,7 +48,7 @@ the to disappear. You can clear the current notifications by
 ````
 DELETE /notifications
 ````
-or
+or using the JavaScript API
 ````
 api.clearNotifications()
 ````

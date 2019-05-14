@@ -34,6 +34,10 @@ Accept: application/json
     password: <password>
 }
 ````
+or using the JavaScript API
+````
+api.login(email, password)
+````
 
 |Parameter|Description|Example|
 |---|---|---|
@@ -58,6 +62,7 @@ Simply send the following header:
 ````
 Authorization: Bearer <token>
 ````
-
+or using the JavaScript API, this is done automatically. 
+The API stores the token in ```localStorage```.
   
 
