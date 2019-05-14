@@ -1,6 +1,6 @@
 # Notifications
 
-A user may listen to operastions on item.
+A user may listen to operations on an item.
 
 ## Listen to operations
 
