@@ -265,7 +265,7 @@ class SchemaController extends Controller
         $forbidden = "'" . implode("','", API::FORBIDDEN) . "'";
         $tables = $connection->select("select table_name as name, table_comment as comment from information_schema.tables where table_schema=? and table_name not in($forbidden)", [$connection->getDatabaseName()]);
 
-        $paths = ['/login' => [
+        $paths = ['/../../login' => [
             'post' => $this->login()
         ]];
         $schemas = [];
