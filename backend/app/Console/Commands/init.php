@@ -54,7 +54,7 @@ class init extends Command
                 'client_id' => $client,
             ]);
             DB::table('right')->insertGetId([
-                'role:_id' => $role,
+                'role_id' => $role,
                 'client_id' => $client,
                 "tables" => "*",
                 "columns" => "*",
