@@ -317,6 +317,8 @@ class SchemaController extends Controller
             ],
         ]);
 
+        $protocol = $request->isSecure() ? 'https' : 'http';
+
         $schema = array (
             'openapi' => '3.0.0',
             'info' =>
@@ -325,7 +327,7 @@ class SchemaController extends Controller
                     'version' => 'v1.0',
                 ],
             'servers' => [
-                ['url' => 'http://'.$request->getHost() . $request->getBaseUrl() . '/api/v1.0'],
+                ['url' => $protocol . '://'.$request->getHost() . $request->getBaseUrl() . '/api/v1.0'],
             ],
             'paths' => $paths,
             'components' => [
