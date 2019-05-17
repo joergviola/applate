@@ -34,6 +34,8 @@ Accept: application/json
     password: <password>
 }
 ````
+(where `base` really refers to the base URL, without
+the `/api/vx.y` prefix)
 or using the JavaScript API
 ````
 api.login(email, password)
@@ -41,7 +43,7 @@ api.login(email, password)
 
 |Parameter|Description|Example|
 |---|---|---|
-|base|Base URL of the API|https://yourdomain.com/api/v1.0|
+|base|Base URL of the API|https://yourdomain.com|
 |email|E-Mail of the user|test@test.test|
 |password|Password in clear text|supersecret|
 

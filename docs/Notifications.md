@@ -2,6 +2,9 @@
 
 A user may listen to operations on an item.
 
+``api`` here always refers to your API endpoint, eg. 
+`https://yourdomain.com/api/v1.0`.
+
 ## Listen to operations
 
 Subscriptions are handled by the type 'listen' 
@@ -21,7 +24,7 @@ through the usual API. Its properties are:
 To retrieve all current notifications for the signed-in user, simply call
 
 ````
-GET /notifications
+GET <api>/notifications
 ````
 or using the JavaScript API
 ````
@@ -46,7 +49,7 @@ After reading the notifications, the user typically want
 the to disappear. You can clear the current notifications by
 
 ````
-DELETE /notifications
+DELETE <api>/notifications
 ````
 or using the JavaScript API
 ````

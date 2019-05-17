@@ -5,8 +5,11 @@ _This is work in progress!_
 Applate provides an API for querying for data.  
 This is done via this endpoint:
 
+``api`` here always refers to your API endpoint, eg. 
+`https://yourdomain.com/api/v1.0`.
+
 ````
-POST /{type}/query
+POST <api>/{type}/query
 
 {query}
 ````
@@ -55,7 +58,7 @@ a `role` field, holding the full role object referenced
 by ``role_id``: 
 
 ````
-POST /right/query
+POST <api>/right/query
 
 {
     and: {

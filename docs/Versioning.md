@@ -4,12 +4,15 @@ By default, all types are versioned. Whenever an item
 is created, updated or deleted, its status is saved 
 with a specific log id and can be restored later on. 
 
+``api`` here always refers to your API endpoint, eg. 
+`https://yourdomain.com/api/v1.0`.
+
 ## Log listing
 
 Old versions of an item can be retrieved via this call:
 
 ````
-GET /{type}/{id}/log
+GET <api>/{type}/{id}/log
 ````
 or using the JavaScript API
 ````
@@ -40,7 +43,7 @@ As a result, a list of item with the following attributes is returned:
 If you have a ``log-id``, you can restore this version of the item by:
 
 ````
-PUT /{type}/restore/{log-id}
+PUT <api>/{type}/restore/{log-id}
 ````
 or using the JavaScript API
 ````
