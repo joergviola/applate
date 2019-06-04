@@ -45,19 +45,34 @@ class API {
     }
 
     private static function with($result, $field, $with) {
+        if (isset($with['one'])) {
+            $type = $with['one'];
+            $isOne = true;
+        } else {
+            $type = $with['many'];
+            $isOne = false;
+        }
+
+        $thisField = @$with['this'] ?: 'id';
+        $thatField = @$with['that'] ?: 'id';
+
         $ids = [];
-        $from = $with['from'];
         foreach ($result as &$item) {
-            $ids[] = $item->$from;
+            $ids[] = $item->$thisField;
         }
         $ids = array_unique($ids);
-        $target = self::provider($with['type'])
-            ->whereIn('id', $ids)
+        $target = self::provider($type)
+            ->whereIn($thatField, $ids)
             ->get()
-            ->keyBy('id');
+            ->groupBy($thatField);
 
         foreach ($result as &$item) {
-            $item->$field = $target[$item->$from];
+            $result = $target[$item->$thisField];
+            if ($isOne) {
+                $item->$field = @$result[0];
+            } else {
+                $item->$field = $result;
+            }
         }
     }
 

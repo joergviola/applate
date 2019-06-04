@@ -39,9 +39,9 @@ you specify with-clauses:
 ````
 {
     with: {
-        target-field: {type: type, from: from},
-        target-field: {type: type, from: from},
-        target-field: {type: type, from: from},
+        target-field: {one: type, this: from},
+        target-field: {many: type, that: from},
+
         ...
     }
 }               
@@ -65,7 +65,8 @@ POST <api>/right/query
         role_id: 23
     },
     with: {
-        role: {type:'role', from: 'role_id'}
+        role: {one:'role', this: 'role_id', that: 'id'}
+        rights: {many:'right', this: 'role_id', that:'role_id'}
     }
 }
 ````
