@@ -5,6 +5,7 @@ namespace App;
 use App\Events\ApiCreateEvent;
 use App\Events\ApiQueryEvent;
 use App\Events\ApiUpdateEvent;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -37,8 +38,17 @@ class API {
 
     private static function where($q, $query) {
         if (isset($query['and'])) {
-            foreach ($query['and'] as $field => $value) {
-                $q->where($field, $value);
+            foreach ($query['and'] as $field => $crit) {
+                if (!is_array($crit)) {
+                    $crit = ['=' => $crit];
+                }
+                foreach ($crit as $op => $value) {
+                    switch ($op) {
+                        case '=': $q->where($field, $value); break;
+                        case 'in': $q->whereIn($field, $value); break;
+                        default: throw new QueryException("Unknown operator '$op'");
+                    }
+                }
             }
         }
         return $q;
@@ -61,17 +71,17 @@ class API {
             $ids[] = $item->$thisField;
         }
         $ids = array_unique($ids);
-        $target = self::provider($type)
-            ->whereIn($thatField, $ids)
-            ->get()
-            ->groupBy($thatField);
+        $query = @$with['query'] ?: ['and' => []];
+        $query['and'][$thatField] = ['in' => $ids];
+        $found = self::query($type, $query);
+        $refs = $found->groupBy($thatField);
 
         foreach ($result as &$item) {
-            $result = $target[$item->$thisField];
+            $ref = $refs[$item->$thisField];
             if ($isOne) {
-                $item->$field = @$result[0];
+                $item->$field = @$ref[0];
             } else {
-                $item->$field = $result;
+                $item->$field = $ref;
             }
         }
     }
