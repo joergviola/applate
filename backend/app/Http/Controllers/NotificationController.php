@@ -16,7 +16,7 @@ class NotificationController extends Controller
                 'listener_id' => $user->id,
             ],
             'with' => [
-                'user' => ['type' => 'users', 'from' => 'user_id']
+                'user' => ['one' => 'users', 'this' => 'user_id']
             ]
         ]);
         return response()->json($items);

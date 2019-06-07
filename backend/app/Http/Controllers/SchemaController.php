@@ -217,8 +217,9 @@ class SchemaController extends Controller
         ];
     }
 
-    private function model($columns) {
+    private function model($columns, $description) {
         return [
+            'description' => $description,
             'properties' => $columns
         ];
     }
@@ -272,6 +273,7 @@ class SchemaController extends Controller
 
         foreach ($tables as $table) {
             $type = $table->name;
+            $comment = $table->comment;
             $columns = $this->getColumns($connection, $type);
             $paths["/$type/{id}"] = [
                 'get' => $this->get($type),
@@ -284,7 +286,7 @@ class SchemaController extends Controller
             $paths["/$type/query"] = [
                 'post' => $this->query($type),
             ];
-            $schemas[$type] = $this->model($columns);
+            $schemas[$type] = $this->model($columns, $comment);
         }
         $schemas['query'] = $this->model([
             'and' => [
@@ -315,7 +317,7 @@ class SchemaController extends Controller
                     ]
                 ],
             ],
-        ]);
+        ], 'Query for items.');
 
         $protocol = $request->isSecure() ? 'https' : 'http';
 
