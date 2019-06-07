@@ -17,7 +17,7 @@
         ],
         query : {
           with: {
-            role: {type:'role', from: 'role_id'}
+            role: {one:'role', this: 'role_id'}
           }
         }
       },

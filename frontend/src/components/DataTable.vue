@@ -27,7 +27,7 @@
           </v-fab-transition>
     </v-toolbar>
     <v-data-table
-            :headers="cfg.columns"
+            :headers="headers"
             :items="items"
             :search="search"
     >
@@ -62,12 +62,21 @@
       'cfg': {type: Object},
       'to': {type: Object},
       'id-column': {type: String, default: 'id'},
+      'action-label': {type: String, default: 'Aktionen'},
     },
 
     data: () => ({
       search: '',
       items: [],
     }),
+
+    computed: {
+      headers() {
+        const result = this.cfg.columns.slice();
+        result.push({ text: this.actionLabel, value: null, sortable: false });
+        return result;
+      }
+    },
 
     created () {
       api.find(this.type, this.cfg.query).then(items => this.items = items)
