@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\PermissionException;
 use Closure;
+use Illuminate\Auth\AuthenticationException;
 
 class HandleError
 {
@@ -21,9 +22,12 @@ class HandleError
         $exception = $response->exception;
         if ($exception instanceof PermissionException) {
             return response()->json(['message'=>$exception->getMessage()], 403);
+        } else if ($exception instanceof AuthenticationException) {
+            return response()->json(['message'=>$exception->getMessage()], 401);
         } else if ($exception instanceof \Exception) {
             return response()->json(['message'=>$exception->getMessage()], 400);
         }
+
         return $response;
     }
 }
