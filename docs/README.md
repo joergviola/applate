@@ -15,6 +15,7 @@ Applate is a modern Application template that provides
 1. [Serverside Business Logic](BusinessLogic.md)
 1. [Versioning](Versioning.md)
 1. [Notifications](Notifications.md)
+1. [Documents](Documents.md)
 
 ## Frontend
 

@@ -34,12 +34,7 @@
       <template v-slot:items="props">
         <td v-for="col in cfg.columns">{{ prop(props.item, col.value) }}</td>
         <td >
-          <router-link :to="toLink(props.item[idColumn])"><v-icon
-                  small
-                  class="mr-2"
-          >
-            keyboard_arrow_right
-          </v-icon></router-link>
+          <router-link :to="toLink(props.item[idColumn])">Edit</router-link>
         </td>
       </template>
       <template v-slot:no-data>
