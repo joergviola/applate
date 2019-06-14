@@ -107,7 +107,7 @@ const theAPI = {
     var data = new FormData()
     for (const key in files) {
       for (const file of files[key]) {
-        data.append(key + '[]', file, file.name)
+        data.append(key, file, file.name)
       }
     }
     const headers = {

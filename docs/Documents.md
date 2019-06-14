@@ -18,6 +18,9 @@ The ``documents`` parameter is an object with an array of JavaScript
 ``File`` objects under each key. The describes the path where the documents
 are to be stored.
 
+If the key ends with ``[]``, this is assumed a multiple upload.
+In this case, Files with original name can only exist once.
+Otherwise, only one file will be stored under the key.
 
 ## List documents
 
