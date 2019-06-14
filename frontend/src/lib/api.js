@@ -2,25 +2,14 @@ import router from '../router'
 
 const base = "http://localhost/applate/backend/public/api/v1.0"
 
-function call(method, url, data) {
-  const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-  }
+function callDirect(url, options) {
+
   const user = theAPI.user()
   if (user) {
-    headers["Authorization"] = "Bearer " + user.token
+    options.headers["Authorization"] = "Bearer " + user.token
   }
-  return fetch(base + url, {
-    method: method, // *GET, POST, PUT, DELETE, etc.
-    mode: "cors", // no-cors, cors, *same-origin
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin", // include, *same-origin, omit
-    headers: headers,
-    redirect: "follow", // manual, *follow, error
-    referrer: "no-referrer", // no-referrer, *client
-    body: JSON.stringify(data), // body data type must match "Content-Type" header
-  })
+
+  return fetch(base + url, options)
     .then(response => {
       if (response.status == 200) {
         return response.json()
@@ -39,6 +28,23 @@ function call(method, url, data) {
         })
       }
     })
+}
+
+function call(method, url, data) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  }
+  return callDirect(url, {
+    method: method, // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, cors, *same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: headers,
+    redirect: "follow", // manual, *follow, error
+    referrer: "no-referrer", // no-referrer, *client
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+  });
 }
 
 const storage = {
@@ -97,6 +103,32 @@ const theAPI = {
   createNotifications: function () {
     return call('DELETE',  '/notifications')
   },
+  createDocs: function(type, id, files) {
+    var data = new FormData()
+    for (const key in files) {
+      for (const file of files[key]) {
+        data.append(key + '[]', file, file.name)
+      }
+    }
+    const headers = {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    }
+
+    return callDirect('/' + type + '/' + id + '/documents', {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, cors, *same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, *same-origin, omit
+      headers: {},
+      redirect: "follow", // manual, *follow, error
+      referrer: "no-referrer", // no-referrer, *client
+      body: data, // body data type must match "Content-Type" header
+    })
+  },
+  getDocs: function(type, id) {
+    return call('GET',  '/' + type+ '/' + id + '/documents')
+  }
 }
 
 export default theAPI;

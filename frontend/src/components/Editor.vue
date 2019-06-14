@@ -8,7 +8,7 @@
     </v-toolbar>
       <v-card>
           <v-card-text>
-              <slot v-bind:item="item"></slot>
+              <slot v-bind:item="item" v-bind:files="files"></slot>
           </v-card-text>
           <v-card-actions>
               <v-btn color="default" :to="history()">Historie</v-btn>
@@ -34,6 +34,7 @@
 
     data: () => ({
       item: {},
+      files: {}
     }),
 
     created () {
@@ -54,11 +55,13 @@
         return { name: this.back || this.type+'-list'}
       },
       save() {
-        if (this.$route.params.id!='new') {
-          api.update(this.type, this.$route.params.id, this.item).then(item => this.$router.push(this.backLink()))
-        } else {
-          api.create(this.type, this.item).then(item => this.$router.push(this.backLink()))
-        }
+        const wait = this.$route.params.id!='new' ?
+          api.update(this.type, this.$route.params.id, this.item) :
+          api.create(this.type, this.item)
+        wait
+          .then(item => api.createDocs(this.type, item.id, this.files))
+          .then(() => this.$router.push(this.backLink()))
+          .catch(error => console.log(error))
       }
     }
   }

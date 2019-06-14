@@ -24,6 +24,10 @@ Route::group(['prefix' => 'v1.0' , 'middleware' => ['auth:api']], function() {
     Route::get('/{type}/{id}/log', 'VersionController@log');
     Route::put('/{type}/restore/{log}', 'VersionController@restore');
 
+    Route::get('/{type}/{id}/documents', 'DocumentController@list');
+    Route::post('/{type}/{id}/documents', 'DocumentController@upload');
+    Route::delete('/{type}/{id}/documents', 'DocumentController@delete');
+
     Route::get('/notifications', 'NotificationController@index');
     Route::delete('/notifications', 'NotificationController@clear');
 

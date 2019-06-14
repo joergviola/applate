@@ -127,7 +127,7 @@ class API {
         $user = Auth::user();
         if (is_null($user)) throw new PermissionException("No user");
         $access = Right::canUser($user, $type, $action);
-        if (is_null($access)) throw new PermissionException("Access denied");
+        if (is_null($access)) throw new PermissionException("Access denied for $action on $type");
         return $user;
     }
 }

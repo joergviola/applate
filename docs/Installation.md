@@ -25,6 +25,7 @@ $ git merge upstream/master
     ````
     $ php artisan migrate
     $ php artisan passport:client --personal
+    $ php artisan storage:link
     $ php artisan init
     ````
 

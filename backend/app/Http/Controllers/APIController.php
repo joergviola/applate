@@ -32,8 +32,9 @@ class APIController extends Controller
     public function update(Request $request, $type, $id) {
         $item = $request->json();
         $count = API::update($type, $id, $item->all());
-        if ($count==0)  return response()->json("", 404);
-        return response()->json();
+        // Also 0 if no changes
+        //if ($count==0)  return response()->json("", 404);
+        return response()->json(['id' => $id]);
     }
 }
 

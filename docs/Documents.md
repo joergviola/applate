@@ -6,7 +6,7 @@ This is done via a seperate Document API.
 ## Upload documents
 
 ````
-POST <api>/<type>/<id>/document
+POST <api>/<type>/<id>/documents
 ````
 or using the JavaScript API
 ````
@@ -14,33 +14,35 @@ api.createDocs(type, id, documents)
 ````
 The POST request here is a multipart-request 
 containing one part per file.
-The ``documents`` parameter is an array of JavaScript 
-``File`` objects.
+The ``documents`` parameter is an object with an array of JavaScript 
+``File`` objects under each key. The describes the path where the documents
+are to be stored.
 
 
 ## List documents
 
 ````
-GET <api>/<type>/<id>/document
+GET <api>/<type>/<id>/documents
 ````
 or using the JavaScript API
 ````
-api.readDocs(type, id)
+api.getDocs(type, id)
 ````
 The result is the list of attached documents with the following attributes:
 
-|Attribute|Description|
-|---|---|
-|id|Id of the document|
-|mimetype|Mimetype identified at upload time|
-|size|Size in Bytes|
-|original|File name at upload time|
-|url|URL for downloading the document|
+|Attribute|Description|Example|
+|---|---|---|
+|id|Id of the document|4235|
+|path|Pfad inkl. Name der Datei|``/cust/avatar.png``
+|mimetype|Mimetype identified at upload time|`ìmage/png`
+|size|Size in Bytes|7493|
+|original|File name at upload time|`my-avatar.png`
+|url|URL for downloading the document|`https://domain.test/file/user/565/cust/avatar.png`
 
 ## Remove documents
 
 ````
-DELETE <api>/<type>/<id>/document
+DELETE <api>/<type>/<id>/documents
 ````
 or using the JavaScript API
 ````
