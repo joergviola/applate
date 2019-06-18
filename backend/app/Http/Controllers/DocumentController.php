@@ -77,6 +77,7 @@ class DocumentController extends Controller
     }
 
     public function upload(Request $request, $type, $id) {
+        \Log::debug('file upload');
         $ids = [];
         foreach ($request->allFiles() as $key => $files) {
             if (is_array($files)) {
@@ -91,6 +92,24 @@ class DocumentController extends Controller
     }
 
     public function delete(Request $request, $type, $id) {
+        $ids = $request->json()->all();
+
+        $query = [
+            'and' => [
+                'type' => $type,
+                'item_id' => $id,
+                'id' => ['in' => $ids],
+            ],
+        ];
+        $items = API::query('document', $query);
+        $stamp = time();
+        foreach ($items as $item) {
+            // Move to archive here...
+            $dir = $type . '/' . $id . '/' . $item->path;
+            Storage::disk('public')->move($dir . '/' . $item->name, $dir . '/archive/' . $item->id . '/' . $item->name . '-' . $stamp);
+            API::provider('document')->delete($item->id);
+        }
+
         return response()->json();
     }
 }

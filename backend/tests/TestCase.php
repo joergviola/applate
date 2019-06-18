@@ -37,9 +37,21 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    protected function assertStatus($response, $status) {
+    protected function findUser($email) {
+        $response = $this->withUser()->json('POST', '/api/v1.0/users/query', []);
+
+        $this->assertStatus($response, 200);
+
+        foreach ($response->json() as $user) {
+            if ($email == $user['email']) return $user;
+        }
+        return null;
+    }
+
+
+    protected function assertStatus($response, $status=200) {
         if ($response->status()!=$status) {
-            $response->dump();
+            print_r($response->getContent());
         }
         $response->assertStatus($status);
     }

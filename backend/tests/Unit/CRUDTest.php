@@ -8,8 +8,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class CRUDTest extends TestCase
 {
 
-    private $sally;
-
     public function testCreate()
     {
         $response = $this->withUser()->json('POST', '/api/v1.0/users', [
@@ -19,20 +17,7 @@ class CRUDTest extends TestCase
             'role_id' => $this->user['role_id']
         ]);
 
-        $response
-            ->assertStatus(200);
-    }
-
-
-    private function findUser($email) {
-        $response = $this->withUser()->json('POST', '/api/v1.0/users/query', []);
-
-        $this->assertStatus($response, 200);
-
-        foreach ($response->json() as $user) {
-            if ($email == $user['email']) return $user;
-        }
-        return null;
+        $this->assertStatus($response);
     }
 
     public function testRead()
@@ -46,7 +31,7 @@ class CRUDTest extends TestCase
         $this->assertNotEmpty($sally);
 
         $response = $this->withUser()->json('DELETE', '/api/v1.0/users/' . $sally['id'], []);
-        $this->assertStatus($response, 200);
+        $this->assertStatus($response);
 
         $this->assertEmpty($this->findUser('sally@test.test'));
     }

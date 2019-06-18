@@ -48,7 +48,7 @@ class API {
                     switch ($op) {
                         case '=': $q->where($field, $value); break;
                         case 'in': $q->whereIn($field, $value); break;
-                        default: throw new QueryException("Unknown operator '$op'");
+                        default: throw new \Exception("Unknown operator '$op'");
                     }
                 }
             }

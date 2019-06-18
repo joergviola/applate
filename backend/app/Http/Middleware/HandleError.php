@@ -18,6 +18,7 @@ class HandleError
      */
     public function handle($request, Closure $next, $guard = null)
     {
+        \Log::debug("Request", ['m'=>$request->method(), 'uri'=>$request->url(), 'p' => $request->all()]);
         $response = $next($request);
         $exception = $response->exception;
         if ($exception instanceof PermissionException) {
