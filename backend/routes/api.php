@@ -20,6 +20,7 @@ Route::group(['prefix' => 'v1.0' , 'middleware' => ['auth:api']], function() {
     Route::get('/{type}/{id}', 'APIController@read');
     Route::post('/{type}', 'APIController@create');
     Route::put('/{type}/{id}', 'APIController@update');
+    Route::delete('/{type}/{id}', 'APIController@delete');
 
     Route::get('/{type}/{id}/log', 'VersionController@log');
     Route::put('/{type}/restore/{log}', 'VersionController@restore');

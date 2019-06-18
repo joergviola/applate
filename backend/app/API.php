@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Events\ApiCreateEvent;
+use App\Events\ApiDeleteEvent;
 use App\Events\ApiQueryEvent;
 use App\Events\ApiUpdateEvent;
 use Illuminate\Database\QueryException;
@@ -21,6 +22,7 @@ class API {
     ];
 
     public static function query($type, $query) {
+        \Log::debug('API query', ['type' => $type, 'query'=>json_encode($query)]);
         $user = self::can($type, 'R');
         $q = self::provider($type);
         $q = self::where($q, $query);
@@ -87,6 +89,7 @@ class API {
     }
 
     public static function read($type, $id) {
+        \Log::debug('API read', ['type' => $type, 'id' => $id]);
         $user = self::can($type, 'R');
         $item = self::provider($type)
             ->find($id);
@@ -97,6 +100,7 @@ class API {
     }
 
     public static function create($type, $data) {
+        \Log::debug('API create', ['type' => $type, 'data'=>json_encode($data)]);
         $user = self::can($type, 'C');
         $data['client_id'] = $user->client_id;
         return DB::transaction(function() use ($user, $type, $data) {
@@ -108,6 +112,7 @@ class API {
     }
 
     public static function update($type, $id, $data) {
+        \Log::debug('API update', ['type' => $type, 'id'=>$id, 'data'=>json_encode($data)]);
         $user = self::can($type, 'U');
         return DB::transaction(function() use ($type, $id, $data, $user) {
             event(new ApiUpdateEvent($user, $type, $id, $data));
@@ -115,6 +120,18 @@ class API {
                 ->where('id', $id)
                 ->where('client_id', $user->client_id)
                 ->update($data);
+        });
+    }
+
+    public static function delete($type, $id) {
+        \Log::debug('API delete', ['type' => $type, 'id'=>$id]);
+        $user = self::can($type, 'D');
+        return DB::transaction(function() use ($type, $id, $user) {
+            event(new ApiDeleteEvent($user, $type, $id));
+            return self::provider($type)
+                ->where('id', $id)
+                ->where('client_id', $user->client_id)
+                ->delete();
         });
     }
 

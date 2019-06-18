@@ -36,5 +36,10 @@ class APIController extends Controller
         //if ($count==0)  return response()->json("", 404);
         return response()->json(['id' => $id]);
     }
+
+    public function delete(Request $request, $type, $id) {
+        API::delete($type, $id);
+        return response()->json();
+    }
 }
 
