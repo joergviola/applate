@@ -3,7 +3,7 @@
 namespace App\Events;
 
 
-class ApiCreateEvent
+class ApiBeforeUpdateEvent
 {
     public $user;
     public $type;

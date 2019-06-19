@@ -2,11 +2,14 @@
 
 namespace App;
 
-use App\Events\ApiCreateEvent;
-use App\Events\ApiDeleteEvent;
-use App\Events\ApiQueryEvent;
-use App\Events\ApiUpdateEvent;
-use Illuminate\Database\QueryException;
+use App\Events\ApiBeforeCreateEvent;
+use App\Events\ApiAfterCreateEvent;
+use App\Events\ApiBeforeDeleteEvent;
+use App\Events\ApiAfterDeleteEvent;
+use App\Events\ApiBeforeReadEvent;
+use App\Events\ApiAfterReadEvent;
+use App\Events\ApiBeforeUpdateEvent;
+use App\Events\ApiAfterUpdateEvent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -24,6 +27,7 @@ class API {
     public static function query($type, $query) {
         \Log::debug('API query', ['type' => $type, 'query'=>json_encode($query)]);
         $user = self::can($type, 'R');
+        event(new ApiBeforeReadEvent($user, $type, $query));
         $q = self::provider($type);
         $q = self::where($q, $query);
         $q->where('client_id', $user->client_id);
@@ -33,7 +37,7 @@ class API {
                 self::with($result, $field, $with);
             }
         }
-        event(new ApiQueryEvent($user, $type, $result));
+        event(new ApiAfterReadEvent($user, $type, $result));
 
         return $result;
     }
@@ -91,11 +95,12 @@ class API {
     public static function read($type, $id) {
         \Log::debug('API read', ['type' => $type, 'id' => $id]);
         $user = self::can($type, 'R');
+        event(new ApiBeforeReadEvent($user, $type, ['id' => $id]));
         $item = self::provider($type)
             ->find($id);
         if ($item==null || $item->client_id != $user->client_id) return null;
         $result = [ $item ];
-        event(new ApiQueryEvent($user, $type, $result));
+        event(new ApiAfterReadEvent($user, $type, $result));
         return $item;
     }
 
@@ -104,9 +109,10 @@ class API {
         $user = self::can($type, 'C');
         $data['client_id'] = $user->client_id;
         return DB::transaction(function() use ($user, $type, $data) {
+            event(new ApiBeforeCreateEvent($user, $type, $data));
             $id = self::provider($type)
                 ->insertGetId($data);
-            event(new ApiCreateEvent($user, $type, $id, $data));
+            event(new ApiAfterCreateEvent($user, $type, $id, $data));
             return $id;
         });
     }
@@ -115,11 +121,13 @@ class API {
         \Log::debug('API update', ['type' => $type, 'id'=>$id, 'data'=>json_encode($data)]);
         $user = self::can($type, 'U');
         return DB::transaction(function() use ($type, $id, $data, $user) {
-            event(new ApiUpdateEvent($user, $type, $id, $data));
-            return self::provider($type)
+            event(new ApiBeforeUpdateEvent($user, $type, $id, $data));
+            $count = self::provider($type)
                 ->where('id', $id)
                 ->where('client_id', $user->client_id)
                 ->update($data);
+            event(new ApiAfterUpdateEvent($user, $type, $id, $count));
+            return $count;
         });
     }
 
@@ -127,11 +135,13 @@ class API {
         \Log::debug('API delete', ['type' => $type, 'id'=>$id]);
         $user = self::can($type, 'D');
         return DB::transaction(function() use ($type, $id, $user) {
-            event(new ApiDeleteEvent($user, $type, $id));
-            return self::provider($type)
+            event(new ApiBeforeDeleteEvent($user, $type, $id));
+            $count = self::provider($type)
                 ->where('id', $id)
                 ->where('client_id', $user->client_id)
                 ->delete();
+            event(new ApiAfterDeleteEvent($user, $type, $id, $count));
+            return $count;
         });
     }
 

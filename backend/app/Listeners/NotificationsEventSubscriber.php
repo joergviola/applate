@@ -3,21 +3,18 @@
 namespace App\Listeners;
 
 use App\API;
-use App\Events\ApiCreateEvent;
-use App\Events\ApiQueryEvent;
-use App\Events\ApiUpdateEvent;
+use App\Events\ApiAfterCreateEvent;
+use App\Events\ApiBeforeUpdateEvent;
 use Illuminate\Database\QueryException;
-use Illuminate\Events\Dispatcher;
-use Illuminate\Support\Facades\Hash;
 
 class NotificationsEventSubscriber
 {
 
-    public function handleUpdate(ApiUpdateEvent $event) {
+    public function handleUpdate(ApiBeforeUpdateEvent $event) {
         $this->notify($event->user, $event->type, $event->id, 'U');
     }
 
-    public function handleCreate(ApiCreateEvent $event) {
+    public function handleCreate(ApiAfterCreateEvent $event) {
         $this->notify($event->user, $event->type, $event->id, 'C');
     }
 

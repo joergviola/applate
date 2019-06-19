@@ -2,16 +2,15 @@
 
 namespace App\Listeners;
 
-use App\Events\ApiCreateEvent;
-use App\Events\ApiQueryEvent;
-use App\Events\ApiUpdateEvent;
-use Illuminate\Events\Dispatcher;
+use App\Events\ApiAfterCreateEvent;
+use App\Events\ApiAfterReadEvent;
+use App\Events\ApiBeforeUpdateEvent;
 use Illuminate\Support\Facades\Hash;
 
 class UserEventSubscriber
 {
 
-    public function handleQuery(ApiQueryEvent $event) {
+    public function handleQuery(ApiAfterReadEvent $event) {
         if ($event->type!='users') return;
 
         foreach ($event->items as $user) {
@@ -19,7 +18,7 @@ class UserEventSubscriber
         }
     }
 
-    public function handleUpdate(ApiUpdateEvent $event) {
+    public function handleUpdate(ApiBeforeUpdateEvent $event) {
         if ($event->type!='users') return;
 
         if (!empty($event->item['password'])) {
@@ -29,7 +28,7 @@ class UserEventSubscriber
         }
     }
 
-    public function handleCreate(ApiCreateEvent $event) {
+    public function handleCreate(ApiAfterCreateEvent $event) {
         if ($event->type!='users') return;
 
         if (!empty($event->item['password'])) {

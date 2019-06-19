@@ -3,15 +3,15 @@
 namespace App\Events;
 
 
-class ApiQueryEvent
+class ApiBeforeDeleteEvent
 {
     public $user;
     public $type;
-    public $items;
+    public $id;
 
-    public function __construct($user, $type, &$items) {
+    public function __construct($user, $type, $id) {
         $this->user = $user;
         $this->type = $type;
-        $this->items = &$items;
+        $this->id = $id;
     }
 }
