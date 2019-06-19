@@ -14,16 +14,7 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void {
         parent::setUp();
 
-        $response = $this
-            ->withHeaders([
-                "Content-Type" => "application/json",
-                "Accept" => "application/json",
-            ])
-            ->json('POST', '/login', [
-                'email' => 'admin',
-                'password' => 'admin',
-            ]);
-
+        $response = $this->login('admin', 'admin');
         $response->assertStatus(200);
 
         $this->user = $response->json();
@@ -54,6 +45,23 @@ abstract class TestCase extends BaseTestCase
             print_r($response->getContent());
         }
         $response->assertStatus($status);
+    }
+
+    /**
+     * @return \Illuminate\Foundation\Testing\TestResponse
+     */
+    protected function login($email, $password) {
+        $response = $this
+            ->withHeaders([
+                "Content-Type" => "application/json",
+                "Accept" => "application/json",
+            ])
+            ->json('POST', '/login', [
+                'email' => $email,
+                'password' => $password,
+            ]);
+
+        return $response;
     }
 
 }

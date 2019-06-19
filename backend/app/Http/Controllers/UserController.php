@@ -18,6 +18,7 @@ class UserController extends Controller
     public function login(Request $request) {
         $credentials = $request->only('email', 'password');
         if (!Auth::attempt($credentials)) {
+            \Log::info('Login attempt failed', $credentials);
             if ($request->isJson()) {
                 return response()->json(['message'=>'Access denied'], 403);
             } else {
@@ -26,6 +27,7 @@ class UserController extends Controller
         }
         $user = Auth::user();
         $user->token = $user->createToken('Personal')->accessToken;
+        \Log::info('Login attempt successful', $credentials);
         if ($request->isJson()) {
             return response()->json($user);
         } else {
