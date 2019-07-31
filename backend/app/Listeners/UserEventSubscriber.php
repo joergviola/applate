@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Events\ApiAfterCreateEvent;
+use App\Events\ApiBeforeCreateEvent;
 use App\Events\ApiAfterReadEvent;
 use App\Events\ApiBeforeUpdateEvent;
 use Illuminate\Support\Facades\Hash;
@@ -28,7 +28,7 @@ class UserEventSubscriber
         }
     }
 
-    public function handleCreate(ApiAfterCreateEvent $event) {
+    public function handleCreate(ApiBeforeCreateEvent $event) {
         if ($event->type!='users') return;
 
         if (!empty($event->item['password'])) {

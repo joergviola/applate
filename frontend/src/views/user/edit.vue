@@ -29,8 +29,8 @@
       files: [],
     }),
     created () {
+      api.find('role', {}).then(roles => this.roles = roles)
       if (this.$route.params.id!='new') {
-        api.find('role', {}).then(roles => this.roles = roles)
         api.getDocs('users', this.$route.params.id).then(files => this.files=files)
       }
     },

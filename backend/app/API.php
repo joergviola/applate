@@ -95,7 +95,8 @@ class API {
     public static function read($type, $id) {
         \Log::debug('API read', ['type' => $type, 'id' => $id]);
         $user = self::can($type, 'R');
-        event(new ApiBeforeReadEvent($user, $type, ['id' => $id]));
+        $query = ['id' => $id];
+        event(new ApiBeforeReadEvent($user, $type, $query));
         $item = self::provider($type)
             ->find($id);
         if ($item==null || $item->client_id != $user->client_id) return null;
