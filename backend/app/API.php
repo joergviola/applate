@@ -29,8 +29,9 @@ class API {
         $user = self::can($type, 'R');
         event(new ApiBeforeReadEvent($user, $type, $query));
         $q = self::provider($type);
+        $q = self::join($q, $query, $type);
         $q = self::where($q, $query);
-        $q->where('client_id', $user->client_id);
+        $q->where($type.'.client_id', $user->client_id);
         $result = $q->get();
         if (isset($query['with'])) {
             foreach ($query['with'] as $field => $with) {
@@ -40,6 +41,17 @@ class API {
         event(new ApiAfterReadEvent($user, $type, $result));
 
         return $result;
+    }
+
+    private static function join($q, $query, $type) {
+        if (isset($query['join'])) {
+            foreach($query['join'] as $table => $join) {
+                $q = $q->join($table, $type.'.'.$join['this'], @$join['operator'] ?: '=', $table.'.'.$join['that']);
+            }
+            return $q->select($type . '.*');
+        } else {
+            return $q;
+        }
     }
 
     private static function where($q, $query) {

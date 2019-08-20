@@ -16,5 +16,3 @@ Route::get('/login', "UserController@index");
 Route::post('/login', "UserController@login");
 
 Route::get('/schema', 'SchemaController@index');
-
-

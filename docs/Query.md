@@ -40,6 +40,23 @@ or have an operator. Currenty implemented:
 |``field: {'=': value}``|``field=value``|
 |``field: {'in': array}``|``field in (array)``|
 
+
+## Joins
+If the query has to expand several types, joins can be used:
+````
+  "join": {
+    "role": {"this":"role_id", "operator":"=", "that":"id"}
+  },
+````
+Fields of joined types are never delivered in the result, 
+but they can be queried:
+````
+  "and": {
+    "role.name": "Manager"
+  },
+````
+These joins have nothing in common with the following with-joins.
+
 ## With-Joins
 
 In order to fetch referenced items in one query, 
