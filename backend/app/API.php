@@ -130,6 +130,23 @@ class API {
         });
     }
 
+    public static function bulkCreate($type, $items) {
+        \Log::debug('API bulk create', ['type' => $type, 'data'=>json_encode($items)]);
+        $user = self::can($type, 'C');
+        return DB::transaction(function() use ($user, $type, $items) {
+            $ids = [];
+            foreach ($items as $data) {
+                event(new ApiBeforeCreateEvent($user, $type, $data));
+                $data['client_id'] = $user->client_id;
+                $id = self::provider($type)
+                    ->insertGetId($data);
+                $ids[] = $id;
+                event(new ApiAfterCreateEvent($user, $type, $id, $data));
+            }
+            return $ids;
+        });
+    }
+
     public static function update($type, $id, $data) {
         \Log::debug('API update', ['type' => $type, 'id'=>$id, 'data'=>json_encode($data)]);
         $user = self::can($type, 'U');
@@ -144,6 +161,23 @@ class API {
         });
     }
 
+    public static function bulkUpdate($type, $data) {
+        \Log::debug('API bulk update', ['type' => $type, 'data'=>json_encode($data)]);
+        $user = self::can($type, 'U');
+        return DB::transaction(function() use ($type, $data, $user) {
+            $count = 0;
+            foreach ($data as $id => $item) {
+                event(new ApiBeforeUpdateEvent($user, $type, $id, $item));
+                $count += self::provider($type)
+                    ->where('id', $id)
+                    ->where('client_id', $user->client_id)
+                    ->update($item);
+                event(new ApiAfterUpdateEvent($user, $type, $id, $count));
+            }
+            return $count;
+        });
+    }
+
     public static function delete($type, $id) {
         \Log::debug('API delete', ['type' => $type, 'id'=>$id]);
         $user = self::can($type, 'D');
@@ -154,6 +188,22 @@ class API {
                 ->where('client_id', $user->client_id)
                 ->delete();
             event(new ApiAfterDeleteEvent($user, $type, $id, $count));
+            return $count;
+        });
+    }
+
+    public static function bulkDelete($type, $ids) {
+        \Log::debug('API bulk delete', ['type' => $type, 'ids'=>$ids]);
+        $user = self::can($type, 'D');
+        return DB::transaction(function() use ($type, $ids, $user) {
+            foreach ($ids as $id) {
+                event(new ApiBeforeDeleteEvent($user, $type, $id));
+                $count = self::provider($type)
+                    ->where('id', $id)
+                    ->where('client_id', $user->client_id)
+                    ->delete();
+                event(new ApiAfterDeleteEvent($user, $type, $id, $count));
+            }
             return $count;
         });
     }

@@ -24,9 +24,14 @@ class APIController extends Controller
     }
 
     public function create(Request $request, $type) {
-        $item = $request->json();
-        $id = API::create($type, $item->all());
-        return response()->json(['id' => $id]);
+        $item = $request->json()->all();
+        if (isset($item[0])) {
+            $ids = API::bulkCreate($type, $item);
+            return response()->json(['ids' => $ids]);
+        } else {
+            $id = API::create($type, $item);
+            return response()->json(['id' => $id]);
+        }
     }
 
     public function update(Request $request, $type, $id) {
@@ -37,9 +42,21 @@ class APIController extends Controller
         return response()->json(['id' => $id]);
     }
 
+    public function bulkUpdate(Request $request, $type) {
+        $item = $request->json();
+        $count = API::bulkUpdate($type, $item->all());
+        return response()->json(['count' => $count]);
+    }
+
     public function delete(Request $request, $type, $id) {
         API::delete($type, $id);
         return response()->json();
+    }
+
+    public function bulkDelete(Request $request, $type) {
+        $ids = $request->json()->all();
+        $count = API::bulkDelete($type, $ids);
+        return response()->json(['count' => $count]);
     }
 }
 

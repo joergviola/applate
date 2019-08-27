@@ -19,8 +19,10 @@ Route::group(['prefix' => 'v1.0' , 'middleware' => ['auth:api']], function() {
     Route::post('/{type}/query', 'APIController@query');
     Route::get('/{type}/{id}', 'APIController@read');
     Route::post('/{type}', 'APIController@create');
+    Route::put('/{type}', 'APIController@bulkUpdate');
     Route::put('/{type}/{id}', 'APIController@update');
     Route::delete('/{type}/{id}', 'APIController@delete');
+    Route::delete('/{type}', 'APIController@bulkDelete');
 
     Route::get('/{type}/{id}/log', 'VersionController@log');
     Route::put('/{type}/restore/{log}', 'VersionController@restore');

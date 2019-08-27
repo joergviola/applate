@@ -52,8 +52,9 @@ or using the JavaScript API
 api.update(type, id, item)
 ````
 
+Only attributes mentioned in the `item` are updated.
 Please note that you are allowed to change the id 
-of an item using this verb.
+of an item using this verb. 
 
 
 ## Delete
@@ -66,5 +67,26 @@ or using the JavaScript API
 api.delete(type, id)
 ````
 
+## Bulk Operations
 
+Each manipulating operation is available as a bulk version:
 
+````
+POST <api>/{type}
+
+[{item1}, {item2}, {item3}, ...]
+````
+
+````
+PUT <api>/{type}
+
+{id1: {item1}, id2: {item2}, ...}
+````
+
+````
+DELETE <api>/{type}
+
+[id1, id2, ...]
+````
+
+Events are triggered per item, so these versions might be expensive!
