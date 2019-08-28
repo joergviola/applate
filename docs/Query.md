@@ -75,6 +75,20 @@ In each result item, a `target-field`is added, holding
 a full item of ``type``, the `id` of which is read 
 from ``from``.
 
+## Order
+
+You may specify to order by field:
+
+````
+{
+    order: {
+        sort-field: 'ASC',
+        sort-field: 'DESC',
+        ...
+    }
+}               
+````
+
 ## Example
 
 The following example will return all users.

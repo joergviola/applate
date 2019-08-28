@@ -31,6 +31,7 @@ class API {
         $q = self::provider($type);
         $q = self::join($q, $query, $type);
         $q = self::where($q, $query);
+        $q = self::order($q, $query);
         $q->where($type.'.client_id', $user->client_id);
         $result = $q->get();
         if (isset($query['with'])) {
@@ -41,6 +42,15 @@ class API {
         event(new ApiAfterReadEvent($user, $type, $result));
 
         return $result;
+    }
+
+    private static function order($q, $query) {
+        if (isset($query['order'])) {
+            foreach($query['order'] as $field => $dir) {
+                $q = $q->orderBy($field, $dir);
+            }
+        }
+        return $q;
     }
 
     private static function join($q, $query, $type) {
