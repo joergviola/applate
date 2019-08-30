@@ -75,12 +75,17 @@ class API {
     }
 
     private static function buildWhere($q, $field, $crit, $or) {
-        if (!is_array($crit)) {
+        if (is_null($crit) || !is_array($crit)) {
             $crit = ['=' => $crit];
         }
         foreach ($crit as $op => $value) {
             switch ($op) {
                 case '=':
+                case '>=':
+                case '<=':
+                case '>':
+                case '<':
+                case '<>':
                     if ($or) {
                         $q->orWhere($field, $value);
                     } else {
@@ -158,7 +163,7 @@ class API {
         $refs = $found->groupBy($thatField);
 
         foreach ($result as &$item) {
-            $ref = $refs[$item->$thisField];
+            $ref = @$refs[$item->$thisField];
             if ($isOne) {
                 $item->$field = @$ref[0];
             } else {

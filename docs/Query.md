@@ -42,6 +42,11 @@ or have an operator. Currenty implemented:
 |---|---|
 |``field: value``|``field=value``|
 |``field: {'=': value}``|``field=value``|
+|``field: {'>=': value}``|``field>=value``|
+|``field: {'<=': value}``|``field<=value``|
+|``field: {'>': value}``|``field>value``|
+|``field: {'<': value}``|``field<value``|
+|``field: {'<>': value}``|``field<>value``|
 |``field: {'in': array}``|``field in (array)``|
 
 
