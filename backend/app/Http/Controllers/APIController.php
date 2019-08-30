@@ -49,13 +49,12 @@ class APIController extends Controller
     }
 
     public function delete(Request $request, $type, $id) {
-        API::delete($type, $id);
-        return response()->json();
-    }
-
-    public function bulkDelete(Request $request, $type) {
-        $ids = $request->json()->all();
-        $count = API::bulkDelete($type, $ids);
+        $ids = explode(',', $id);
+        if (count($ids)==1) {
+            $count = API::delete($type, $ids[0]);
+        } else {
+            $count = API::bulkDelete($type, $ids);
+        }
         return response()->json(['count' => $count]);
     }
 }

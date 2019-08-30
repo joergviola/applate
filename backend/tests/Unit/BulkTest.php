@@ -56,8 +56,9 @@ class BulkTest extends TestCase
         $tony = $this->findUser('tony2@test.test');
         $this->assertNotEmpty($tony);
 
-        $response = $this->withUser()->json('DELETE', '/api/v1.0/users',
-            [$sally['id'], $tony['id']]);
+        $ids = implode(',', [$sally['id'], $tony['id']]);
+
+        $response = $this->withUser()->json('DELETE', '/api/v1.0/users/' . $ids, []);
         $this->assertStatus($response);
 
         $this->assertEmpty($this->findUser('sally2@test.test'));

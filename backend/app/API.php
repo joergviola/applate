@@ -206,9 +206,10 @@ class API {
         \Log::debug('API bulk delete', ['type' => $type, 'ids'=>$ids]);
         $user = self::can($type, 'D');
         return DB::transaction(function() use ($type, $ids, $user) {
+            $count = 0;
             foreach ($ids as $id) {
                 event(new ApiBeforeDeleteEvent($user, $type, $id));
-                $count = self::provider($type)
+                $count += self::provider($type)
                     ->where('id', $id)
                     ->where('client_id', $user->client_id)
                     ->delete();

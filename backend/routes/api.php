@@ -22,7 +22,6 @@ Route::group(['prefix' => 'v1.0' , 'middleware' => ['auth:api']], function() {
     Route::put('/{type}', 'APIController@bulkUpdate');
     Route::put('/{type}/{id}', 'APIController@update');
     Route::delete('/{type}/{id}', 'APIController@delete');
-    Route::delete('/{type}', 'APIController@bulkDelete');
 
     Route::get('/{type}/{id}/log', 'VersionController@log');
     Route::put('/{type}/restore/{log}', 'VersionController@restore');

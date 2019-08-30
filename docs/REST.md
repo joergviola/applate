@@ -84,9 +84,7 @@ PUT <api>/{type}
 ````
 
 ````
-DELETE <api>/{type}
-
-[id1, id2, ...]
+DELETE <api>/{type}/id1,id2,...
 ````
 
 Events are triggered per item, so these versions might be expensive!
