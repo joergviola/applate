@@ -33,6 +33,7 @@ class API {
         $q = self::where($q, $query);
         $q = self::order($q, $query);
         $q->where($type.'.client_id', $user->client_id);
+//        \Log::debug('API query SQL', ['query'=>$q->toSQL()]);
         $result = $q->get();
         if (isset($query['with'])) {
             foreach ($query['with'] as $field => $with) {
@@ -66,21 +67,73 @@ class API {
 
     private static function where($q, $query) {
         if (isset($query['and'])) {
-            foreach ($query['and'] as $field => $crit) {
-                if (!is_array($crit)) {
-                    $crit = ['=' => $crit];
-                }
-                foreach ($crit as $op => $value) {
-                    switch ($op) {
-                        case '=': $q->where($field, $value); break;
-                        case 'in': $q->whereIn($field, $value); break;
-                        default: throw new \Exception("Unknown operator '$op'");
+            $q = self::whereAnd($q, $query['and']);
+        } else if (isset($query['or'])) {
+            $q = self::whereOr($q, $query['or']);
+        }
+        return $q;
+    }
+
+    private static function buildWhere($q, $field, $crit, $or) {
+        if (!is_array($crit)) {
+            $crit = ['=' => $crit];
+        }
+        foreach ($crit as $op => $value) {
+            switch ($op) {
+                case '=':
+                    if ($or) {
+                        $q->orWhere($field, $value);
+                    } else {
+                        $q->where($field, $value);
                     }
-                }
+                    break;
+                case 'in':
+                    if ($or) {
+                        $q->orWhere($field, $value);
+                    } else {
+                        $q->whereIn($field, $value);
+                    }
+                    break;
+                default:
+                    throw new \Exception("Unknown operator '$op'");
+            }
+        }
+    }
+
+    private static function whereAnd($q, $query) {
+        foreach ($query as $field => $crit) {
+            if ($field == 'or') {
+                $q->where(function ($query) use ($crit) {
+                    self::whereOr($query, $crit);
+                });
+            } else {
+                self::buildWhere($q, $field, $crit, false);
             }
         }
         return $q;
     }
+
+    private static function whereOr($q, $query) {
+        $or = false;
+        foreach ($query as $field => $crit) {
+            if ($field == 'and') {
+                if ($or) {
+                    $q->orWhere(function ($query) use ($crit) {
+                        self::whereAnd($query, $crit);
+                    });
+                } else {
+                    $q->where(function ($query) use ($crit) {
+                        self::whereAnd($query, $crit);
+                    });
+                }
+            } else {
+                self::buildWhere($q, $field, $crit, $or);
+            }
+            $or = true;
+        }
+        return $q;
+    }
+
 
     private static function with($result, $field, $with) {
         if (isset($with['one'])) {

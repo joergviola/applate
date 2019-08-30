@@ -47,4 +47,26 @@ class QueryTest extends TestCase
         $this->assertEquals('users', $user['rights'][0]['tables']);
         $this->assertEquals('Admin3333', $user['role']['name']);
     }
+
+    public function testAndOr() {
+        // This query fetches all users with email 'admin' along with their rights on the table 'users' and their role
+        $response = $this->withUser()->json('POST', '/api/v1.0/users/query', [
+            'and' => [
+                'email' => 'admin',
+                'or' => [
+                    'name' => 'admin',
+                    'email' => 'Tom',
+                    'and' => [
+                        'client_id' => 1000,
+                        'role_id' => 8
+                    ]
+                ]
+            ],
+        ]);
+        $this->assertStatus($response);
+        $users = $response->json();
+        $this->assertCount(1, $users);
+        $user = $users[0];
+        $this->assertEquals('admin', $user['email']);
+    }
 }

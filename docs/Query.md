@@ -20,13 +20,17 @@ api.find(type, query)
 
 ## Where-Clause
 
-Currently, only `AND`` queries are implemented:
+Queries consist of nested AND and OR clauses, eg:
 ````
 {
     and: {
         field-name: value,
         field-name: {operator: op, value: val},
         field-name: value,
+        or: {
+            field-name: value,
+            ...
+        }
         ...
     }
 }               
