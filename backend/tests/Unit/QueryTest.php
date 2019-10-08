@@ -21,7 +21,7 @@ class QueryTest extends TestCase
                     "that" => "role_id",
                     "query" => [
                         "and" => [
-                            "tables" => "users"
+                            "tables" => "*"
                         ],
                         "with" => [
                             "role" => [
@@ -44,8 +44,8 @@ class QueryTest extends TestCase
         $user = $users[0];
         $this->assertEquals('admin', $user['email']);
         $this->assertCount(1, $user['rights']);
-        $this->assertEquals('users', $user['rights'][0]['tables']);
-        $this->assertEquals('Admin3333', $user['role']['name']);
+        $this->assertEquals('*', $user['rights'][0]['tables']);
+        $this->assertEquals('Admin', $user['role']['name']);
     }
 
     public function testAndOr() {
@@ -69,4 +69,21 @@ class QueryTest extends TestCase
         $user = $users[0];
         $this->assertEquals('admin', $user['email']);
     }
+
+    public function testPaging() {
+        $response = $this->withUser()->json('POST', '/api/v1.0/right/query', [
+            'and' => [
+            ],
+            "page" => [
+                "skip" => 2,
+                "take" => 2,
+                "count" => true
+            ]
+        ]);
+        $this->assertStatus($response);
+        $result = $response->json();
+        $this->assertCount(2, $result['result']);
+        $this->assertGreaterThan(2, $result['count']);
+    }
+
 }

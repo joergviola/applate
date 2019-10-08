@@ -33,6 +33,7 @@ class API {
         $q = self::where($q, $query);
         $q = self::order($q, $query);
         $q->where($type.'.client_id', $user->client_id);
+        $q = self::page($q, $query);
 //        \Log::debug('API query SQL', ['query'=>$q->toSQL()]);
         $result = $q->get();
         if (isset($query['with'])) {
@@ -42,7 +43,39 @@ class API {
         }
         event(new ApiAfterReadEvent($user, $type, $result));
 
+        $result = self::count($result, $query, $type, $user);
+
         return $result;
+    }
+
+    private static function count($result, $query, $type, $user) {
+        if (isset($query['page'])) {
+            if (isset($query['page']['count']) && $query['page']['count']) {
+                $q = self::provider($type);
+                $q = self::join($q, $query, $type);
+                $q = self::where($q, $query);
+                $q = self::order($q, $query);
+                $q->where($type.'.client_id', $user->client_id);
+                $count = $q->count();
+                $result = [
+                    'count' => $count,
+                    'result' => $result
+                ];
+            }
+        }
+        return $result;
+    }
+
+    private static function page($q, $query) {
+        if (isset($query['page'])) {
+            if (isset($query['page']['skip'])) {
+                $q = $q->skip($query['page']['skip']);
+            }
+            if (isset($query['page']['take'])) {
+                $q = $q->take($query['page']['take']);
+            }
+        }
+        return $q;
     }
 
     private static function order($q, $query) {
