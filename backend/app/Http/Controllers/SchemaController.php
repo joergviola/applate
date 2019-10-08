@@ -258,6 +258,30 @@ class SchemaController extends Controller
         ];
     }
 
+    private function notifications() {
+            return [
+                    'operationId' => 'notification',
+                    'summary' => "Get notifications",
+                    'tags' => ['notification'],
+                    'requestBody' => [
+                            'description' => "",
+                            'required' => false,
+                            'content' => []
+                            ],
+                    'produces' =>
+                            array (
+                                    0 => 'application/json',
+                                ),
+                    'responses' => $this->responses([
+                                200 => [
+                                            'description' => "A list of all pending notifications for the user.",
+                                            'content' => $this->content([
+                                                    '$ref' => "#/components/schemas/notification",
+                                                ]),
+                                        ]
+                                ], [400, 403])
+                    ];
+    }
 
 
     public function schema(Request $request) {
@@ -266,9 +290,14 @@ class SchemaController extends Controller
         $forbidden = "'" . implode("','", API::FORBIDDEN) . "'";
         $tables = $connection->select("select table_name as name, table_comment as comment from information_schema.tables where table_schema=? and table_name not in($forbidden)", [$connection->getDatabaseName()]);
 
-        $paths = ['/../../login' => [
-            'post' => $this->login()
-        ]];
+        $paths = [
+            '/../../login' => [
+                'post' => $this->login()
+            ],
+            '/notifications' => [
+                'get' => $this->notifications()
+            ]
+        ];
         $schemas = [];
 
         foreach ($tables as $table) {

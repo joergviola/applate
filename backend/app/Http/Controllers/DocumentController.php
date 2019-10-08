@@ -66,7 +66,9 @@ class DocumentController extends Controller
         $stamp = time();
         foreach ($items as $item) {
             // Move to archive here...
-            Storage::disk('public')->move($dir . '/' . $item->name, $dir . '/archive/' . $item->id . '/' . $item->name . '-' . $stamp);
+            if (Storage::disk('public')->exists($dir . '/' . $item->name)) {
+                Storage::disk('public')->move($dir . '/' . $item->name, $dir . '/archive/' . $item->id . '/' . $item->name . '-' . $stamp);
+            }
             if ($doc_id==null) {
                 $doc_id = $item->id;
             } else {

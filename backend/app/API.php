@@ -279,6 +279,24 @@ class API {
         });
     }
 
+    public static function bulkUpdateOrCreate($type, $keyColumn, $data) {
+            \Log::debug('API bulk update or create', ['type' => $type, 'keyColumn'=>$keyColumn]);
+            $user = self::can($type, 'U');
+            self::can($type, 'C');
+            return DB::transaction(function() use ($type, $keyColumn, $data, $user) {
+                    $total = 0;
+                    foreach ($data as $item) {
+                            $key = $item[$keyColumn];
+            //                event(new ApiBeforeUpdateEvent($user, $type, $key, $item));
+                            $count = self::provider($type)
+                                    ->updateOrInsert(['client_id' => $user->client_id, $keyColumn => $key], $item);
+                $total += $count;
+//                event(new ApiAfterUpdateEvent($user, $type, $key, $count));
+            }
+            return ['count' => $total];
+        });
+    }
+
     public static function delete($type, $id) {
         \Log::debug('API delete', ['type' => $type, 'id'=>$id]);
         $user = self::can($type, 'D');
