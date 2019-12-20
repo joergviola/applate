@@ -119,15 +119,16 @@ class API {
                 case '>':
                 case '<':
                 case '<>':
+                case 'like':
                     if ($or) {
-                        $q->orWhere($field, $value);
+                        $q->orWhere($field, $op, $value);
                     } else {
-                        $q->where($field, $value);
+                        $q->where($field, $op, $value);
                     }
                     break;
                 case 'in':
                     if ($or) {
-                        $q->orWhere($field, $value);
+                        $q->orWhereIn($field, $value);
                     } else {
                         $q->whereIn($field, $value);
                     }
