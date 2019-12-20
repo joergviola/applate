@@ -19,6 +19,9 @@ No user is able to make any requests outside of her client.
 A user is authenticated by her e-mail and password during [Authentication](Authentication.md).
 Each subsequent request is then checked against the rights of her role.
 
+Each user can be changed as any other ressource, given the appropriate rights.
+If the password is requested to be changed, the old password has to be included in the parameter `old_password`. The password-hash of the user is never delivered via the API.
+
 ## Roles
 
 Roles are simply lists of rights.
