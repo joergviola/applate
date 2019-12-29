@@ -21,6 +21,7 @@ class AuthTest extends TestCase
         $this->assertEquals('admin', $user['email']);
         $this->assertArrayNotHasKey('password', $user);
         $this->assertNotEmpty($user['token']);
+        $this->assertCount(1, $user['rights']);
     }
 
     public function testSally()
