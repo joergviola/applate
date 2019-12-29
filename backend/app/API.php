@@ -174,17 +174,18 @@ class API {
     }
 
 
-    private static function with($result, $field, $with) {
+    private static function with($thisType, $result, $field, $with) {
         if (isset($with['one'])) {
             $type = $with['one'];
             $isOne = true;
+            $thisField = @$with['this'] ?: $type.'_id';
+            $thatField = @$with['that'] ?: 'id';
         } else {
             $type = $with['many'];
             $isOne = false;
+            $thisField = @$with['this'] ?: 'id';
+            $thatField = @$with['that'] ?: $thisType.'_id';
         }
-
-        $thisField = @$with['this'] ?: 'id';
-        $thatField = @$with['that'] ?: 'id';
 
         $ids = [];
         foreach ($result as &$item) {
