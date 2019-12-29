@@ -57,6 +57,8 @@ Its attribute `token` contains the authentication token.
 It is long lived and supposed to be stored securely on the clients
 behalf. 
 
+Its attribute `rights` contains all her rights on behalf of her role.
+
 ## Authentication
 
 This token can be used on subsequent API call for Bearer Authentication.
