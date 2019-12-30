@@ -220,16 +220,19 @@ class API {
         return $item;
     }
 
+    private static function createOne($user, $type, $data) {
+        $data['client_id'] = $user->client_id;
+        event(new ApiBeforeCreateEvent($user, $type, $data));
+        $id = self::provider($type)->insertGetId($data);
+        event(new ApiAfterCreateEvent($user, $type, $id, $data));
+        return $id;
+    }
+
     public static function create($type, $data) {
         \Log::debug('API create', ['type' => $type, 'data'=>json_encode($data)]);
         $user = self::can($type, 'C');
-        $data['client_id'] = $user->client_id;
         return DB::transaction(function() use ($user, $type, $data) {
-            event(new ApiBeforeCreateEvent($user, $type, $data));
-            $id = self::provider($type)
-                ->insertGetId($data);
-            event(new ApiAfterCreateEvent($user, $type, $id, $data));
-            return $id;
+            return self::createOne($user, $type, $data);
         });
     }
 
@@ -239,28 +242,27 @@ class API {
         return DB::transaction(function() use ($user, $type, $items) {
             $ids = [];
             foreach ($items as $data) {
-                event(new ApiBeforeCreateEvent($user, $type, $data));
-                $data['client_id'] = $user->client_id;
-                $id = self::provider($type)
-                    ->insertGetId($data);
-                $ids[] = $id;
-                event(new ApiAfterCreateEvent($user, $type, $id, $data));
+                $ids[] = self::createOne($user, $type, $data);
             }
             return $ids;
         });
+    }
+
+    private static function updateOne($user, $type, $id, $data) {
+        event(new ApiBeforeUpdateEvent($user, $type, $id, $data));
+        $count = self::provider($type)
+            ->where('id', $id)
+            ->where('client_id', $user->client_id)
+            ->update($data);
+        event(new ApiAfterUpdateEvent($user, $type, $id, $count));
+        return $count;
     }
 
     public static function update($type, $id, $data) {
         \Log::debug('API update', ['type' => $type, 'id'=>$id, 'data'=>json_encode($data)]);
         $user = self::can($type, 'U');
         return DB::transaction(function() use ($type, $id, $data, $user) {
-            event(new ApiBeforeUpdateEvent($user, $type, $id, $data));
-            $count = self::provider($type)
-                ->where('id', $id)
-                ->where('client_id', $user->client_id)
-                ->update($data);
-            event(new ApiAfterUpdateEvent($user, $type, $id, $count));
-            return $count;
+            return self::updateOne($user, $type, $id, $data);
         });
     }
 
@@ -270,12 +272,7 @@ class API {
         return DB::transaction(function() use ($type, $data, $user) {
             $count = 0;
             foreach ($data as $id => $item) {
-                event(new ApiBeforeUpdateEvent($user, $type, $id, $item));
-                $count += self::provider($type)
-                    ->where('id', $id)
-                    ->where('client_id', $user->client_id)
-                    ->update($item);
-                event(new ApiAfterUpdateEvent($user, $type, $id, $count));
+                $count += self::updateOne($user, $type, $id, $item);
             }
             return $count;
         });
@@ -299,17 +296,21 @@ class API {
         });
     }
 
+    private static function deleteOne($user, $type, $id) {
+        event(new ApiBeforeDeleteEvent($user, $type, $id));
+        $count = self::provider($type)
+            ->where('id', $id)
+            ->where('client_id', $user->client_id)
+            ->delete();
+        event(new ApiAfterDeleteEvent($user, $type, $id, $count));
+        return $count;
+    }
+
     public static function delete($type, $id) {
         \Log::debug('API delete', ['type' => $type, 'id'=>$id]);
         $user = self::can($type, 'D');
         return DB::transaction(function() use ($type, $id, $user) {
-            event(new ApiBeforeDeleteEvent($user, $type, $id));
-            $count = self::provider($type)
-                ->where('id', $id)
-                ->where('client_id', $user->client_id)
-                ->delete();
-            event(new ApiAfterDeleteEvent($user, $type, $id, $count));
-            return $count;
+            return self::deleteOne($user, $type, $id);
         });
     }
 
@@ -319,12 +320,7 @@ class API {
         return DB::transaction(function() use ($type, $ids, $user) {
             $count = 0;
             foreach ($ids as $id) {
-                event(new ApiBeforeDeleteEvent($user, $type, $id));
-                $count += self::provider($type)
-                    ->where('id', $id)
-                    ->where('client_id', $user->client_id)
-                    ->delete();
-                event(new ApiAfterDeleteEvent($user, $type, $id, $count));
+                $count += self::deleteOne($user, $type, $id);
             }
             return $count;
         });
