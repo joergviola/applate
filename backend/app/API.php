@@ -38,7 +38,7 @@ class API {
         $result = $q->get();
         if (isset($query['with'])) {
             foreach ($query['with'] as $field => $with) {
-                self::with($result, $field, $with);
+                self::with($type, $result, $field, $with);
             }
         }
         event(new ApiAfterReadEvent($user, $type, $result));
