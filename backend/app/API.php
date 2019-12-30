@@ -202,7 +202,7 @@ class API {
             if ($isOne) {
                 $item->$field = @$ref[0];
             } else {
-                $item->$field = $ref;
+                $item->$field = $ref ?: [];
             }
         }
     }
