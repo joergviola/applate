@@ -204,6 +204,11 @@ class API {
             } else {
                 $item->$field = $ref ?: [];
             }
+            if (!isset($item->_meta)) {
+                $item->_meta = new \stdClass();
+            }
+            $item->_meta->$field = $with;
+            $item->_meta->$field['ignore'] = true;
         }
     }
 
@@ -220,11 +225,71 @@ class API {
         return $item;
     }
 
+    /**
+     * Removes all _meta attributes (and _meta itself) from data, preparing it for insert or update.
+     * Stores content from all _meta attributes in the data attributes of each _meta field and
+     * returns this _meta content.
+     */
+    private static function extractMeta(&$data) {
+        if (!isset($data['_meta'])) return null;
+        $meta = $data['_meta'];
+        unset($data['_meta']);
+        foreach($meta as $field => &$info) {
+            $info['data'] = $data[$field];
+            unset($data[$field]);
+        }
+        return $meta;
+    }
+
+    /**
+     * If there is meta data, for each un-ignored many relation, sync the referenced type items with
+     * the given ones (in _meta.data) by deleting, updating and creating accordingly.
+     */
+    private static function handleMeta($thisType, $id, $meta) {
+        if ($meta==null) return;
+        foreach($meta as $field => $info) {
+            // info now contains the meta info (like 'with') and the data attribute
+            if (isset($info['ignore']) && $info['ignore']==true) continue;
+            // to one is currently not handled.
+            if (isset($info['one'])) continue;
+
+            $type = $info['many'];
+            $thisField = @$info['this'] ?: 'id';
+            $thatField = @$info['that'] ?: $thisType.'_id';
+
+            $ids = [];
+            $update = [];
+            $create = [];
+            foreach($info['data'] as &$item) {
+                $item[$thatField] = $id;
+                if (isset($item['id'])) {
+                    $ids[] = $item['id'];
+                    $update[$item['id']] = $item;
+                } else {
+                    $create[] = $item;
+                }
+            }
+            $oldItems = self::query($type, ['and' => [$thatField => $id]]);
+            $delete = [];
+            foreach($oldItems as $item) {
+                if (!in_array($item->id, $ids)) $delete[] = $item->id;
+            }
+            // \Log::debug('HANDLEMETA', [$field, $info, $ids, $delete]);
+            self::bulkDelete($type, $delete);
+
+            self::bulkUpdate($type, $update);
+
+            self::bulkCreate($type, $create);
+        }
+    }
+
     private static function createOne($user, $type, $data) {
         $data['client_id'] = $user->client_id;
+        $meta = self::extractMeta($data);
         event(new ApiBeforeCreateEvent($user, $type, $data));
         $id = self::provider($type)->insertGetId($data);
         event(new ApiAfterCreateEvent($user, $type, $id, $data));
+        self::handleMeta($type, $id, $meta);
         return $id;
     }
 
@@ -249,12 +314,14 @@ class API {
     }
 
     private static function updateOne($user, $type, $id, $data) {
+        $meta = self::extractMeta($data);
         event(new ApiBeforeUpdateEvent($user, $type, $id, $data));
         $count = self::provider($type)
             ->where('id', $id)
             ->where('client_id', $user->client_id)
             ->update($data);
         event(new ApiAfterUpdateEvent($user, $type, $id, $count));
+        self::handleMeta($type, $id, $meta);
         return $count;
     }
 

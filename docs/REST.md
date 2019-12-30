@@ -88,3 +88,30 @@ DELETE <api>/{type}/id1,id2,...
 ````
 
 Events are triggered per item, so these versions might be expensive!
+
+## `_meta`: Graph Operations
+
+To a limited extend, you can create and update complete object graphs using the API.
+
+If you have eg. an object of type `role`with an attribute `rights` containing an array of objects of type `right`. If you try to store that graph, you will get an error like 'unknown column rights'.
+
+Just add the following:
+
+````
+{
+    ...,
+    _meta: {
+        rights: {many: 'right', ignore: false}
+    }
+}
+````
+
+(This structure is already present when the object is the result of a query, just with `ignore:true`).
+Updating this will
+
+  1. query for `right` items currently associated to the `role`,
+  1. remove old `right` items whose id is not in your `rights` attributes
+  1. update `right` items in your `rights` attributes that already have an `id`
+  1. create `right` items in your `rights` attributes that have no `id`
+
+The `role_id` field (or whatever you specify using `that`) of the `right` items of course is set correctly.

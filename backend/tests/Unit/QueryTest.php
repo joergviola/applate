@@ -46,6 +46,8 @@ class QueryTest extends TestCase
         $this->assertCount(1, $user['rights']);
         $this->assertEquals('*', $user['rights'][0]['tables']);
         $this->assertEquals('Admin', $user['role']['name']);
+        $this->assertEquals(true, $user['_meta']['rights']['ignore']);
+        $this->assertEquals('right', $user['_meta']['rights']['many']);
     }
 
     public function testAndOr() {

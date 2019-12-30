@@ -1,7 +1,5 @@
 # Query API
 
-_This is work in progress!_
-
 Applate provides an API for querying for data.  
 This is done via this endpoint:
 
@@ -128,6 +126,14 @@ You may specify to order by field:
     }
 }               
 ````
+
+## The `_meta`
+
+Each object queried with a `with` clause is delivered with an `_meta` attribute that contains the `with` clause, along with a `ignore=true` entry. 
+
+This ensures that, sending this exact object to an update action (see [RESTful API](REST.md)), the corresponding object attribute will not be stored into the database (preventing 'unknown column' errors).
+
+For `many` relations, you may set `ignore=false` to sync the relation to the database.
 
 ## Example
 
