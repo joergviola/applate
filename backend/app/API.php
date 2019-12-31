@@ -393,6 +393,18 @@ class API {
         });
     }
 
+    public static function deleteQuery($type, $query) {
+        \Log::debug('API query delete', ['type' => $type, 'query'=>$query]);
+        $user = self::can($type, 'D');
+        return DB::transaction(function() use ($type, $user, $query) {
+            $q = self::provider($type)->where('client_id', $user->client_id);
+            foreach($query as $field => $value) {
+                $q = $q->where($field, $value);
+            }
+            return $q->delete();
+        });
+    }
+
     public static function provider($type) {
         return DB::table($type);
     }

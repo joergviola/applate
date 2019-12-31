@@ -57,5 +57,11 @@ class APIController extends Controller
         }
         return response()->json(['count' => $count]);
     }
+
+    public function deleteQuery(Request $request, $type) {
+        $query = $request->all();
+        $count = API::deleteQuery($type, $query);
+        return response()->json(['count' => $count]);
+    }
 }
 

@@ -89,6 +89,15 @@ DELETE <api>/{type}/id1,id2,...
 
 Events are triggered per item, so these versions might be expensive!
 
+## Query delete
+
+For delete, you may specify query params in request parameter (since DELETE has no).
+The parameters are ANDed. NO EVENTS ARE FIRED!:
+
+````
+DELETE <api>/{type}/query?attr1=val1&attr2=val2
+````
+
 ## `_meta`: Graph Operations
 
 To a limited extend, you can create and update complete object graphs using the API.

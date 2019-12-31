@@ -73,7 +73,7 @@ class CRUDMetaTest extends TestCase
         $role = $this->findRole();
         $rids = [];
         foreach ($role['rights'] as $right) $rids[] = $right['id'];
-        $response = $this->withUser()->json('DELETE', '/api/v1.0/right/' . implode(',',$rids), []);
+        $response = $this->withUser()->json('DELETE', '/api/v1.0/right/query?role_id=' . $role['id'], []);
         $response = $this->withUser()->json('DELETE', '/api/v1.0/role/' . $role['id'], []);
 
         $this->assertStatus($response);
