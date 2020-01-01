@@ -288,7 +288,7 @@ class API {
         $meta = self::extractMeta($data);
         event(new ApiBeforeCreateEvent($user, $type, $data));
         $id = self::provider($type)->insertGetId($data);
-        event(new ApiAfterCreateEvent($user, $type, $id, $data));
+        event(new ApiAfterCreateEvent($user, $type, $id, $data, $meta));
         self::handleMeta($type, $id, $meta);
         return $id;
     }
@@ -314,13 +314,13 @@ class API {
     }
 
     private static function updateOne($user, $type, $id, $data) {
-        $meta = self::extractMeta($data);
         event(new ApiBeforeUpdateEvent($user, $type, $id, $data));
+        $meta = self::extractMeta($data);
         $count = self::provider($type)
             ->where('id', $id)
             ->where('client_id', $user->client_id)
             ->update($data);
-        event(new ApiAfterUpdateEvent($user, $type, $id, $count));
+        event(new ApiAfterUpdateEvent($user, $type, $id, $count, $data, $meta));
         self::handleMeta($type, $id, $meta);
         return $count;
     }
