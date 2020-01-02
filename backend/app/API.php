@@ -285,8 +285,8 @@ class API {
 
     private static function createOne($user, $type, $data) {
         $data['client_id'] = $user->client_id;
-        $meta = self::extractMeta($data);
         event(new ApiBeforeCreateEvent($user, $type, $data));
+        $meta = self::extractMeta($data);
         $id = self::provider($type)->insertGetId($data);
         event(new ApiAfterCreateEvent($user, $type, $id, $data, $meta));
         self::handleMeta($type, $id, $meta);
