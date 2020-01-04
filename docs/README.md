@@ -7,6 +7,7 @@ Applate is a modern Application template that provides
 
 ## Backend
 
+1. [Requirements](Requirements.md)
 1. [Installation](Installation.md)
 1. [Authentication](Authentication.md)
 1. [Users, Roles & Rights](Users.md)
