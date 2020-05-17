@@ -1,15 +1,26 @@
 <template>
-  <v-app class="font-weight-light subheading">
-    <router-view></router-view>
-  </v-app>
+  <div id="app">
+    <component :is="layout">
+      <router-view />
+    </component>
+  </div>
 </template>
 
 <script>
 
-  export default {
-    data: () => ({
-    }),
-    props: {
+import DefaultLayout from '@/layouts/Default'
+import NoSidebarLayout from '@/layouts/NoSidebar'
+
+export default {
+  components: {DefaultLayout, NoSidebarLayout},
+  computed: {
+    layout() {
+      return (this.$route.meta.layout || 'default') + '-layout'
     }
   }
+}
 </script>
+
+<style lang="scss">
+@import 'assets/css/main.scss';
+</style>

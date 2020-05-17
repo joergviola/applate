@@ -26,6 +26,10 @@ Applate is a modern Application template that provides
 
 ## Release Notes
 
+### 0.2 05/17/2020
+
+- Completely new Frontend based on Element-UI
+
 ### 0.2 12/31/2019
 
 - _meta and graph updates
