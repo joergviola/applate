@@ -1,26 +1,26 @@
 <template>
   <div>
     <el-row :gutter="40">
-      <el-col :xs="24" :md="12">
+      <el-col :xs="24" :md="image ? 12 : 24">
         <el-form ref="postForm" v-loading="loading" :model="item" label-position="left" label-width="120px" >
           <fields :item="item" :fields="fields" />
         </el-form>
+        <el-row type="flex" >
+          <el-col :span="24" class="text-right">
+            <el-button type="secondary" @click="$router.go(-1)">
+              Cancel
+            </el-button>
+            <el-button v-for="(button, i) in buttons" :key="i" type="danger" @click="click(button)">
+              {{ button.label }}
+            </el-button>
+            <el-button type="primary" @click="save">
+              Save
+            </el-button>
+          </el-col>
+        </el-row>
       </el-col>
       <el-col v-if="image" :xs="24" :md="12">
         <img width="100%" :src="image">
-      </el-col>
-    </el-row>
-    <el-row type="flex" >
-      <el-col :span="24">
-        <el-button type="secondary" @click="$router.go(-1)">
-          Cancel
-        </el-button>
-        <el-button v-for="(button, i) in buttons" :key="i" type="danger" @click="click(button)">
-          {{ button.label }}
-        </el-button>
-        <el-button type="primary" @click="save">
-          Save
-        </el-button>
       </el-col>
     </el-row>
   </div>
@@ -42,7 +42,7 @@ export default {
   },
   async created() {
     if (this.id !== 'new') {
-      this.load()
+      await this.load()
       this.$emit('update', Object.assign({}, this.item))
     }
   },

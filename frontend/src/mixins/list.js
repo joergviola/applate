@@ -17,12 +17,20 @@ export default {
       return result
     }
   },
+  watch: {
+    query() {
+      this.getList()
+    },
+    template() {
+      this.getList()
+    },
+  },
   created() {
     this.getList()
   },
   methods: {
     addNew() {
-      if (this.createBy !== 'button') {
+      if (this.createBy == 'row' || this.createBy==null) {
         const item = Object.assign({}, this.template)
         item._meta = this.meta
         this.list.push(item)
@@ -30,10 +38,13 @@ export default {
     },
     async getList() {
       this.loading = true
-      this.list = await api.find(this.type, {
+      const query =  {
         and: this.query || this.template,
         with: this.with
-      })
+      }
+      if (this.with) query.with = this.with
+      if (this.order) query.order = this.order
+      this.list = await api.find(this.type, query)
       this.addNew()
       this.loading = false
     },
@@ -93,7 +104,9 @@ export default {
         const key = `field-${index + dir}-${column}`
         let ref = this.$refs[key]
         if (Array.isArray(ref)) ref = ref[0]
-        ref.focus()
+        this.$nextTick(() => {
+          ref.focus()
+        })
       }
     },
 

@@ -10,7 +10,7 @@ html, body {
     color: #2c3e50;
 }
 
-#app {
+#app, .el-container {
     height: 100%;
   }
   
@@ -36,4 +36,12 @@ html, body {
 
 .pull-left {
   float: left;
+}
+
+.pull-clear {
+  clear: both;
+}
+
+.no-border .el-input__inner {
+  border: none;
 }

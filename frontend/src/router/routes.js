@@ -17,7 +17,9 @@ export default [
     meta: {
       icon: 'el-icon-s-home',
       layout: 'default',
-      redirect: 'all'
+      redirect: 'all',
+      bottom: true,
+      rights: ['CRUD']
     },
     children: [
       {
@@ -31,6 +33,17 @@ export default [
         component: () => import('@/views/admin/users/Form.vue'),
       },
     ]
+  },
+  {
+    path: '/roles',
+    name: 'Roles',
+    component: () => import('@/views/admin/roles/Index.vue'),
+    meta: {
+      icon: 'el-icon-s-home',
+      layout: 'default',
+      bottom: true,
+      roles: ['Admin']
+    },
   },
   {
     path: '/login',

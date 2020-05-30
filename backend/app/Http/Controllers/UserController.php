@@ -28,7 +28,11 @@ class UserController extends Controller
         }
         $user = Auth::user();
         $user->token = $user->createToken('Personal')->accessToken;
-        $user->rights = API::query('right', ['and' => ['role_id' => $user->role_id ]]);
+        $roles = API::query('role', [
+            'and' => ['id' => $user->role_id ],
+            'with' => ['rights' => ['many' => 'right'] ]
+        ]);
+        $user->role = $roles[0];
         event(new ApiAfterLoginEvent($user));
         \Log::info('Login attempt successful', [$user->email]);
         if ($request->isJson()) {
