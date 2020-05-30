@@ -102,7 +102,7 @@ export default {
     },
     detailClicked(row) {
       if (typeof this.detail == 'string') {
-        $router.push(`${detail}/${row.id}/detail`)
+        this.$router.push(`${detail}/${row.id}/detail`)
       } else {
         this.detail(row)
       }
