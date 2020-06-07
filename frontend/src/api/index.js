@@ -102,6 +102,9 @@ const theAPI = {
   update: function(type, id, item) {
     return call('PUT', '/' + type + '/' + id, item)
   },
+  updateBulk: function(type, items) {
+    return call('PUT', '/' + type, items)
+  },
   createOrUpdate: async function(type, item) {
     if (item.id) {
       await this.update(type, item.id, item)

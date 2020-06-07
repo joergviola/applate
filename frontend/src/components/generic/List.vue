@@ -9,8 +9,12 @@
       </el-col>
     </div>
 
-    <el-table v-loading="loading" :data="list">
-
+    <el-table ref="theTable" v-loading="loading" :data="list" row-key="id">
+      <el-table-column v-if="sort" label="" width="25">
+        <template slot-scope="{row, $index}">
+          <i class="el-icon-menu"></i>
+        </template>
+      </el-table-column>
       <el-table-column v-for="(col,i) in columns" :key="i" :label="col.label" :prop="col.name" :minWidth="col.width" sortable>
         <template slot-scope="{row, $index}">
           <el-input
@@ -76,7 +80,7 @@ import list from '@/mixins/list'
 export default {
   name: 'GenericList',
   mixins: [list],
-  props: ['type', 'detail', 'columns', 'with', 'query', 'order', 'template', 'createBy', 'allowDelete'],
+  props: ['type', 'detail', 'columns', 'with', 'query', 'order', 'template', 'createBy', 'allowDelete', 'sort'],
   data() {
     return {
     }
@@ -106,7 +110,7 @@ export default {
       } else {
         this.detail(row)
       }
-    }
+    },
   }
 }
 </script>
@@ -114,5 +118,9 @@ export default {
 <style scoped type="sass">
 .input-disabled {
   padding: 0 15px;
+}
+i {
+  color: #EEEEEE;
+  cursor: grab;
 }
 </style>

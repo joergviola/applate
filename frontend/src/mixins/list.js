@@ -1,5 +1,6 @@
 
 import api from '@/api'
+import Sortable from 'sortablejs'
 
 export default {
   data() {
@@ -44,9 +45,42 @@ export default {
       }
       if (this.with) query.with = this.with
       if (this.order) query.order = this.order
+      if (this.sort) {
+        query.order = {}
+        query.order[this.sort] = 'ASC'
+      }
       this.list = await api.find(this.type, query)
       this.addNew()
+      if (this.sort) {
+        this.$nextTick(() => {
+          this.setSort()
+        })
+      }
       this.loading = false
+    },
+    setSort() {
+      const el = this.$refs.theTable.$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0]
+      this.sortable = Sortable.create(el, {
+        ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
+        setData: function(dataTransfer) {
+          // to avoid Firefox bug
+          // Detail see : https://github.com/RubaXa/Sortable/issues/1012
+          dataTransfer.setData('Text', '')
+        },
+        onEnd: evt => {
+          const targetRow = this.list.splice(evt.oldIndex, 1)[0]
+          this.list.splice(evt.newIndex, 0, targetRow)
+          this.updateSort()
+        }
+      })
+    },
+    async updateSort() {
+      const data = {}
+      this.list.forEach((item, i) => {
+        data[item.id] = {}
+        data[item.id][this.sort] = i
+      })
+      api.updateBulk(this.type, data)
     },
     async save(row, attr) {
       if (!row.id) return
