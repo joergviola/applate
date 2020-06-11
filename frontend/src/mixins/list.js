@@ -16,6 +16,13 @@ export default {
         result[key].ignore = true
       }
       return result
+    },
+    rights() {
+      return api.user().role.rights
+        .filter(right => right.tables=='*' || right.tables.search(this.type)!=-1)
+    },
+    readonly() {
+      return !this.userCan(['CRUD', 'R'])
     }
   },
   watch: {
@@ -49,11 +56,20 @@ export default {
         query.order = {}
         query.order[this.sort] = 'ASC'
       }
-      this.list = await api.find(this.type, query)
-      this.addNew()
-      if (this.sort) {
-        this.$nextTick(() => {
-          this.setSort()
+      try {
+        this.list = await api.find(this.type, query)
+        this.addNew()
+        if (this.sort) {
+          this.$nextTick(() => {
+            this.setSort()
+          })
+        }
+      } catch (error) {
+        this.$notify({
+          title: 'Error',
+          message: error.message,
+          type: 'error',
+          duration: 5000
         })
       }
       this.loading = false
@@ -77,16 +93,27 @@ export default {
     async updateSort() {
       const data = {}
       this.list.forEach((item, i) => {
-        data[item.id] = {}
-        data[item.id][this.sort] = i
+        if (item.id) {
+          data[item.id] = {}
+          data[item.id][this.sort] = i
+        }
       })
       api.updateBulk(this.type, data)
     },
     async save(row, attr) {
       if (!row.id) return
-      const data = {}
-      data[attr] = row[attr]
-      await api.update(this.type, row.id, data)
+      try {
+        const data = {}
+        data[attr] = row[attr]
+        await api.update(this.type, row.id, data)
+      } catch (error) {
+        this.$notify({
+          title: 'Error',
+          message: error.message,
+          type: 'error',
+          duration: 5000
+        })
+      }
     },
     async create(row) {
       try {
@@ -143,6 +170,9 @@ export default {
         })
       }
     },
-
+    userCan(actions) {
+      const rights = this.rights.filter(right => actions.indexOf(right.actions)!=-1)
+      return rights.length!=0
+    }
   },
 }

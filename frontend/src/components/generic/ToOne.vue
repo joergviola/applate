@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-select v-loading="loading" :value="value" value-key="id" allow-create filterable default-first-option placeholder="Search..." @change="i => $emit('input', i)">
+    <el-select v-loading="loading" :value="value" value-key="id" :disabled="disabled" allow-create filterable default-first-option placeholder="Search..." @change="i => $emit('input', i)">
       <el-option v-for="i in items" :key="i.id" :label="i[display]" :value="i.id" />
       <template slot="append">...</template>
     </el-select>
@@ -15,7 +15,7 @@ import api from '../../api'
 export default {
   name: 'GenericToOne',
   components: { Fields },
-  props: ['type', 'value', 'display', 'query', 'link'],
+  props: ['type', 'value', 'display', 'query', 'link', 'disabled'],
   data() {
     return {
       items: [],

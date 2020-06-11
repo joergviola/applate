@@ -1,7 +1,7 @@
 import router from '@/router'
 
 const host = window.location.hostname === 'localhost'
-  ? 'http://localhost/applate/backend/public'
+  ? 'http://localhost/promise/backend/public'
   : window.location.origin + window.location.pathname + '/../..'
 
 const base = host + '/api/v1.0'
@@ -71,6 +71,12 @@ const storage = {
 const theAPI = {
   user: function() {
     return storage.get('user')
+  },
+  userCan: function(type, actions) {
+    const rights = this.user().role.rights
+      .filter(right => right.tables=='*' || right.tables.search(type)!=-1)
+      .filter(right => actions.indexOf(right.actions)!=-1)
+    return rights.length>0
   },
   login: function(email, password) {
     return call('POST', '/../../login', { email, password })
@@ -155,8 +161,28 @@ const theAPI = {
     return call('GET', '/' + type + '/' + id + '/documents')
   },
   datetime: function(value = null) {
-    if (!value) value = new Date()
+    if (!value) return null
     return value.toISOString().slice(0, 19).replace('T', ' ')
+  },
+  clone: function(orig, options) {
+    const copy = Object.assign({}, orig, options.mask || {})
+    delete copy.id
+    if (orig._meta) {
+      copy._meta = Object.assign({}, orig._meta)
+    }
+    if (options.refs) {
+      for (const ref in options.refs) {
+        const meta = copy._meta[ref]
+        meta.ignore = false
+        if (meta.many) {
+          copy[ref] = orig[ref].map(o => this.clone(o, options.refs[ref]))
+        }
+        if (meta.one) {
+          copy[ref] = this.clone(orig[ref], options.refs[ref])
+        }
+      }
+    }
+    return copy
   }
 }
 

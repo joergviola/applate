@@ -7,7 +7,6 @@
       :with="w"
       :template="template"
       create-by="button"
-      sort="sort"
     />
   </div>
 </template>

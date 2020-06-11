@@ -9,7 +9,7 @@
       </el-col>
     </div>
 
-    <el-table ref="theTable" v-loading="loading" :data="list" row-key="id">
+    <el-table ref="theTable" v-loading="loading" :data="list" >
       <el-table-column v-if="sort" label="" width="25">
         <template slot-scope="{row, $index}">
           <i class="el-icon-menu"></i>
@@ -43,21 +43,11 @@
             value-format="yyyy-MM-dd hh:mm"
             @blur="save(row, col.name)"
           />
-          <el-tooltip
+          <progress-bar
             v-if="col.type=='progress'"
-            class="item"
-            effect="dark"
-            :content="`${row[col.name]} of ${row[col.budget]}`"
-            placement="top-start"
-          >
-            <el-progress
-              :text-inside="true"
-              :stroke-width="24"
-              :percentage="progressValue(row[col.name], row[col.budget])"
-              :status="progressStatus(row[col.name], row[col.budget])"
-            />
-          </el-tooltip>
-
+            :used="row[col.name]"
+            :planned="row[col.budget]"
+          />
         </template>
       </el-table-column>
 
@@ -76,31 +66,20 @@
 
 <script>
 import list from '@/mixins/list'
+import ProgressBar from './Progress'
 
 export default {
   name: 'GenericList',
   mixins: [list],
+  components: {ProgressBar},
   props: ['type', 'detail', 'columns', 'with', 'query', 'order', 'template', 'createBy', 'allowDelete', 'sort'],
   data() {
     return {
     }
   },  
   methods: {
-    progressValue(value, budget) {
-      if (!value) return 0
-      if (!budget) return 100
-      const progress = value / budget
-      return Math.round(100.0 * progress)
-    },
-    progressStatus(value, budget) {
-      if (!value) return 'success'
-      if (!budget) return 'exception'
-      const progress = value / budget
-      if (progress <= 0.8) return 'success'
-      if (progress <= 1.0) return 'warning'
-      return 'exception'
-    },
     editable(row, col) {
+      if (this.readonly) return false
       if (typeof col.editable == 'function') return col.editable(row)
       else return col.editable
     },

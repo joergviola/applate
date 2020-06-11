@@ -1,4 +1,7 @@
 import Home from '@/views/Home.vue'
+import Tabs from '@/components/layout/Tabs.vue'
+import List from '@/components/generic/List.vue'
+import Details from '@/components/generic/Details.vue'
 
 export default [
   {
@@ -13,24 +16,47 @@ export default [
   {
     path: '/user',
     name: 'Users',
-    component: () => import('@/views/admin/users/Index.vue'),
+    component: Tabs,
     meta: {
       icon: 'el-icon-s-home',
       layout: 'default',
       redirect: 'all',
       bottom: true,
-      rights: ['CRUD']
+      rights: ['CRUD'],
     },
     children: [
       {
         path: 'all',
         name: 'All',
-        component: () => import('@/views/admin/users/List.vue'),
+        component: List,
+        props: route => ({
+          type: 'users',
+          template: {  },
+          with: {  },
+          columns: [
+            { name: 'name', label: 'Name', editable: true },
+            { name: 'email', label: 'E-mail', editable: true },
+          ],
+          detail: "/user",
+          createBy: "button",
+    
+        }),
       },
       {
         path: ':id/detail',
         name: 'Detail',
-        component: () => import('@/views/admin/users/Form.vue'),
+        component: Details,
+        props: route => ({
+          type: 'users',
+          id: route.params.id,
+          fields: [
+            { name: 'name', label: 'Name' },
+            { name: 'email', label: 'E-Mail' },
+            { name: 'phone', label: 'Phone' },
+            { name: 'password', label: 'Password', type: 'password' },
+            { name: 'role_id', label: 'Role', type: 'to-one', ref: 'role', display: 'name'},
+          ],
+        }),
       },
     ]
   },

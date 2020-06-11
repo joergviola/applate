@@ -3,7 +3,7 @@
     <el-row :gutter="40">
       <el-col :xs="24" :md="image ? 12 : 24">
         <el-form ref="postForm" v-loading="loading" :model="item" label-position="left" label-width="120px" >
-          <fields :item="item" :fields="fields" />
+          <fields :item="item" :fields="fields" :readonly="readonly"/>
         </el-form>
         <el-row type="flex" >
           <el-col :span="24" class="text-right">
@@ -38,6 +38,15 @@ export default {
     return {
       item: this.template || {},
       loading: false
+    }
+  },
+  computed: {
+    readonly() {
+      const actions = ['CRUD', 'U']
+      const rights = api.user().role.rights
+        .filter(right => right.tables=='*' || right.tables.search(this.type)!=-1)
+        .filter(right => actions.indexOf(right.actions)!=-1)
+      return rights.length==0
     }
   },
   async created() {
