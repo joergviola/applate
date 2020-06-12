@@ -100,9 +100,10 @@ export default {
         }
         const upload = Object.keys(this.uploadDocs)
           .filter(key => this.uploadDocs[key].add)
-          .map(doc => this.uploadDocs[key].docs)
         if (upload.length>0) {
-          await api.createDocs(this.type, this.item.id, upload)
+          const data = {}
+          upload.forEach(key => data[key] = this.uploadDocs[key].docs)
+          await api.createDocs(this.type, this.item.id, data)
         }
         const remove = Object.keys(this.uploadDocs)
           .filter(key => this.uploadDocs[key].remove)

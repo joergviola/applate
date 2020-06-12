@@ -73,10 +73,6 @@ export default {
   mixins: [list],
   components: {ProgressBar},
   props: ['type', 'detail', 'columns', 'with', 'query', 'order', 'template', 'createBy', 'allowDelete', 'sort'],
-  data() {
-    return {
-    }
-  },  
   methods: {
     editable(row, col) {
       if (this.readonly) return false
