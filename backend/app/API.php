@@ -12,6 +12,7 @@ use App\Events\ApiBeforeUpdateEvent;
 use App\Events\ApiAfterUpdateEvent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class API {
     const FORBIDDEN = [
@@ -403,6 +404,96 @@ class API {
             }
             return $q->delete();
         });
+    }
+
+    public static function storeDocument($type, $id, $key, $file, $multiple) {
+        $dir = $type . '/' . $id . '/' . $key;
+        $originalName = $file->getClientOriginalName();
+        $doc_id = self::removeDocument($type, $id, $key, $multiple ? $originalName : null);
+
+        $path = $file->store($dir, env('FILESYSTEM', 'public'));
+        $name = substr($path, strlen($dir)+1);
+        $data = [
+            'type' => $type,
+            'item_id' => $id,
+            'path' => $key,
+            'name' => $name,
+            'mimetype' => $file->getClientMimeType(),
+            'size' => $file->getSize(),
+            'original' => $originalName
+        ];
+        if ($doc_id) {
+            \Log::info("updating document", ['id'=>$doc_id, 'data'=>$data]);
+            return self::update('document', $doc_id, $data);
+        } else {
+            \Log::info("creating document", ['data'=>$data]);
+            return self::create('document', $data);
+        }
+    }
+
+    private static function removeDocument($type, $id, $key, $original) {
+        $query = [
+            'and' => [
+                'type' => $type,
+                'item_id' => $id,
+                'path' => $key,
+            ],
+        ];
+        if ($original) {
+            $query['and']['original'] = $original;
+        }
+        $items = self::query('document', $query);
+        $dir = $type . '/' . $id . '/' . $key;
+        $doc_id = null;
+        $stamp = time();
+        foreach ($items as $item) {
+            // Move to archive here...
+            if (Storage::disk(env('FILESYSTEM', 'public'))->exists($dir . '/' . $item->name)) {
+                Storage::disk(env('FILESYSTEM', 'public'))->move($dir . '/' . $item->name, $dir . '/archive/' . $item->id . '/' . $item->name . '-' . $stamp);
+            }
+            if ($doc_id==null) {
+                $doc_id = $item->id;
+            } else {
+                self::provider('document')->delete($item->id);
+            }
+        }
+        return $doc_id;
+    }
+
+    public static function deleteDocument($type, $id, $ids) {
+        $query = [
+            'and' => [
+                'type' => $type,
+                'item_id' => $id,
+                'id' => ['in' => $ids],
+            ],
+        ];
+        $items = self::query('document', $query);
+        $stamp = time();
+        foreach ($items as $item) {
+            // Move to archive here...
+            $dir = $type . '/' . $id . '/' . $item->path;
+            Storage::disk(env('FILESYSTEM', 'public'))->move($dir . '/' . $item->name, $dir . '/archive/' . $item->id . '/' . $item->name . '-' . $stamp);
+            self::provider('document')->delete($item->id);
+        }
+    }
+
+    public static function copyDocument($doc, $newId) {
+        $dir = $doc->type . '/' . $doc->item_id . '/' . $doc->path;
+        $newDir = $doc->type . '/' . $newId . '/' . $doc->path;
+        Storage::disk(env('FILESYSTEM', 'public'))->copy($dir . '/' . $doc->name, $newDir . '/' . $doc->name);
+
+        $data = [
+            'type' => $doc->type,
+            'item_id' => $newId,
+            'path' => $doc->path,
+            'name' => $doc->name,
+            'mimetype' => $doc->mimetype,
+            'size' => $doc->size,
+            'original' => $doc->original
+        ];
+        \Log::info("copying document", ['data'=>$data]);
+        return self::create('document', $data);
     }
 
     public static function provider($type) {

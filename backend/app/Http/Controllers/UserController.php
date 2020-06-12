@@ -33,6 +33,9 @@ class UserController extends Controller
             'with' => ['rights' => ['many' => 'right'] ]
         ]);
         $user->role = $roles[0];
+        $user->documents = API::query('document', [
+            'and' => ['type' => 'users', 'item_id' => $user->id ],
+        ]);
         event(new ApiAfterLoginEvent($user));
         \Log::info('Login attempt successful', [$user->email]);
         if ($request->isJson()) {

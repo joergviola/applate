@@ -49,12 +49,25 @@ export default [
         props: route => ({
           type: 'users',
           id: route.params.id,
+          with: {
+            documents: {
+              many: 'document',
+              that: 'item_id',
+              query: {
+                and: {
+                  type: 'users',
+                }
+              }
+              
+            }
+          },
           fields: [
             { name: 'name', label: 'Name' },
             { name: 'email', label: 'E-Mail' },
             { name: 'phone', label: 'Phone' },
             { name: 'password', label: 'Password', type: 'password' },
             { name: 'role_id', label: 'Role', type: 'to-one', ref: 'role', display: 'name'},
+            { name: 'avatar', label: 'Avatar', type: 'doc'},
           ],
         }),
       },

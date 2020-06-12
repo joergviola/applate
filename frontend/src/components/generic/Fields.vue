@@ -30,6 +30,14 @@
         @input="id => field.input ? field.input(id) : null"
         :disabled="readonly"
       />
+      <upload
+        v-else-if="field.type=='doc'"
+        :docs="item[field.docs || 'documents']"
+        :path="field.name"
+        @docs-added="docs => $emit('docs-added', docs)"
+        @docs-removed="docs => $emit('docs-removed', docs)"
+      />
+
       <el-input v-else-if="field.type=='password'" show-password v-model="item[field.name]" :disabled="readonly"/>
       <el-input v-else type="text" :disabled="field.disabled || readonly" v-model="item[field.name]" >
         <template v-if="field.postfix" slot="append">{{field.postfix}}</template>
@@ -41,13 +49,12 @@
 <script>
 
 import ToOne from './ToOne'
+import Upload from './Upload'
 
 export default {
-  name: 'GenericDetails',
-  components: { ToOne },
+  name: 'GenericFields',
+  components: { ToOne, Upload },
   props: ['item', 'fields', 'readonly'],
 }
 </script>
 
-<style lang="scss" scoped>
-</style>

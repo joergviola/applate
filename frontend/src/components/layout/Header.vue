@@ -14,13 +14,14 @@
         </el-col>
         <el-col :span="3" >
             <el-dropdown style="height: 60px; line-height: 60px">
-            <span class="el-dropdown-link text-right">
-                {{user.name}}
-                <i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item<a @click.prevent="logout">Logout</a></el-dropdown-item>
-            </el-dropdown-menu>
+                <el-avatar v-if="avatar" :size="40" :src="avatar.url"></el-avatar>
+                <span class="el-dropdown-link text-right">
+                    {{user.name}}
+                    <i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item<a @click.prevent="logout">Logout</a></el-dropdown-item>
+                </el-dropdown-menu>
             </el-dropdown>
         </el-col>
     </el-row>
@@ -37,6 +38,13 @@ export default {
             user: api.user()
         }
     },
+    computed: {
+        avatar() {
+            const docs = this.user.documents.filter(doc => doc.path=='avatar')
+            if (docs.length>0) return docs[0]
+            else return null
+        }
+    },
     methods: {
         async logout() {
             await api.logout()
@@ -45,3 +53,11 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+header .el-avatar {
+    margin-top: 10px;
+    margin-right: 10px;
+    vertical-align: -40%;
+}
+</style>

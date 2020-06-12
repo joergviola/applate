@@ -3,7 +3,7 @@
     <el-row :gutter="40">
       <el-col :xs="24" :md="image ? 12 : 24">
         <el-form ref="postForm" v-loading="loading" :model="item" label-position="left" label-width="120px" >
-          <fields :item="item" :fields="fields" :readonly="readonly"/>
+          <fields :item="item" :fields="fields" :readonly="readonly" @docs-added="docsAdded" @docs-removed="docsRemoved"/>
         </el-form>
         <el-row type="flex" >
           <el-col :span="24" class="text-right">
@@ -37,6 +37,7 @@ export default {
   data() {
     return {
       item: this.template || {},
+      uploadDocs: {},
       loading: false
     }
   },
@@ -81,6 +82,12 @@ export default {
         this.item[f.name] = id
       }
     },
+    docsAdded(docs) {
+      this.uploadDocs[docs.path] = {add:true, docs:docs.files}
+    },
+    docsRemoved(docs) {
+      this.uploadDocs[docs.path] = {remove:true, docs:docs.files}
+    },
     async save() {
       this.loading = true
       try {
@@ -90,6 +97,20 @@ export default {
         } else {
           const result = await api.create(this.type, this.item)
           this.item.id = result.id
+        }
+        const upload = Object.keys(this.uploadDocs)
+          .filter(key => this.uploadDocs[key].add)
+          .map(doc => this.uploadDocs[key].docs)
+        if (upload.length>0) {
+          await api.createDocs(this.type, this.item.id, upload)
+        }
+        const remove = Object.keys(this.uploadDocs)
+          .filter(key => this.uploadDocs[key].remove)
+          .map(key => this.uploadDocs[key].docs)
+          .flat()
+          .map(doc => doc.id)
+        if (remove.length>0) {
+          await api.removeDocs(this.type, this.item.id, remove.join(','))
         }
         if (this.reload) {
           this.load()

@@ -160,6 +160,9 @@ const theAPI = {
   getDocs: function(type, id) {
     return call('GET', '/' + type + '/' + id + '/documents')
   },
+  removeDocs: function(type, id, docIds) {
+    return call('DELETE', '/' + type + '/' + id + '/documents/' + docIds)
+  },
   datetime: function(value = null) {
     if (!value) return null
     return value.toISOString().slice(0, 19).replace('T', ' ')
