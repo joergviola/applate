@@ -43,7 +43,7 @@ The documentation is [here](docs/Documentation.md)
 
 ## License
 
-[MIT](LICENSE.md)
+[MIT](LICENSE)
 
 ## Release Notes
 
