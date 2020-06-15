@@ -3,7 +3,7 @@
 
 Requirement are give by [Laravel](https://laravel.com/docs/6.x#server-requirements).
 
-Below you find a log of installing on a fresh 18.04 Ubunu server:
+Below you find a log of installing on a fresh 18.04 Ubuntu server:
 
 ````
 sudo apt-get update
