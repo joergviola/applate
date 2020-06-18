@@ -9,7 +9,7 @@
       </el-col>
     </div>
 
-    <el-table ref="theTable" v-loading="loading" :data="list" >
+    <el-table ref="theTable" v-loading="loading" :data="list" row-key="id">
       <el-table-column v-if="sort" label="" width="25">
         <template slot-scope="{row, $index}">
           <i class="el-icon-menu"></i>

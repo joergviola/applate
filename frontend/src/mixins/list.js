@@ -83,10 +83,10 @@ export default {
           // Detail see : https://github.com/RubaXa/Sortable/issues/1012
           dataTransfer.setData('Text', '')
         },
-        onEnd: evt => {
+        onEnd: async evt => {
           const targetRow = this.list.splice(evt.oldIndex, 1)[0]
           this.list.splice(evt.newIndex, 0, targetRow)
-          this.updateSort()
+          await this.updateSort()
         }
       })
     },
@@ -95,7 +95,8 @@ export default {
       this.list.forEach((item, i) => {
         if (item.id) {
           data[item.id] = {}
-          data[item.id][this.sort] = i
+          data[item.id][this.sort] = i+1
+          item[this.sort] = i+1
         }
       })
       api.updateBulk(this.type, data)
