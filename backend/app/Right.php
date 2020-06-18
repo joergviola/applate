@@ -47,7 +47,7 @@ class Right extends Model
     }
 
     private function subvars(&$tree, $context) {
-        foreach($tree as $key=>$value) {
+        foreach($tree as $key=>&$value) {
             if (is_array($value)) {
                 $this->subvars($value, $context);
             } else {
