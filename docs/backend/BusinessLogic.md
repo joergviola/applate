@@ -33,6 +33,18 @@ information:
 
 You are allowed to change the user.  
 
+## Authentication
+
+Every time, an API request is successfully authenticated, an `ApiAfterAuthenticatedEvent`is thrown 
+that you can handle like ```handleAuthentication(ApiAfterAuthenticatedEvent $event)```:
+
+|Field|Content|
+|---|---|
+|user|Authenticated user|
+
+This event can be used to add context information to the user that can be checked during permission checks,
+(see Users)[Users.md].
+
 ## Read
 
 ```handleQuery(ApiBeforeReadEvent $event)``` is called before 

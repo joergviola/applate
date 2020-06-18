@@ -27,13 +27,17 @@ class API {
 
     public static function query($type, $query) {
         \Log::debug('API query', ['type' => $type, 'query'=>json_encode($query)]);
-        $user = self::can($type, 'R');
+        $access = self::can($type, 'R');
+        $user = $access['user'];
         event(new ApiBeforeReadEvent($user, $type, $query));
         $q = self::provider($type);
         $q = self::join($q, $query, $type);
         $q = self::where($q, $query);
         $q = self::order($q, $query);
         $q->where($type.'.client_id', $user->client_id);
+        if ($access['where']) {
+            $q = self::where($q, ['and' => $access['where']]);
+        }
         $q = self::page($q, $query);
 //        \Log::debug('API query SQL', ['query'=>$q->toSQL()]);
         $result = $q->get();
@@ -215,7 +219,8 @@ class API {
 
     public static function read($type, $id) {
         \Log::debug('API read', ['type' => $type, 'id' => $id]);
-        $user = self::can($type, 'R');
+        $access = self::can($type, 'R');
+        $user = $access['user'];
         $query = ['id' => $id];
         event(new ApiBeforeReadEvent($user, $type, $query));
         $item = self::provider($type)
@@ -296,7 +301,8 @@ class API {
 
     public static function create($type, $data) {
         \Log::debug('API create', ['type' => $type, 'data'=>json_encode($data)]);
-        $user = self::can($type, 'C');
+        $access = self::can($type, 'C');
+        $user = $access['user'];
         return DB::transaction(function() use ($user, $type, $data) {
             return self::createOne($user, $type, $data);
         });
@@ -304,7 +310,8 @@ class API {
 
     public static function bulkCreate($type, $items) {
         \Log::debug('API bulk create', ['type' => $type, 'data'=>json_encode($items)]);
-        $user = self::can($type, 'C');
+        $access = self::can($type, 'C');
+        $user = $access['user'];
         return DB::transaction(function() use ($user, $type, $items) {
             $ids = [];
             foreach ($items as $data) {
@@ -328,7 +335,8 @@ class API {
 
     public static function update($type, $id, $data) {
         \Log::debug('API update', ['type' => $type, 'id'=>$id, 'data'=>json_encode($data)]);
-        $user = self::can($type, 'U');
+        $access = self::can($type, 'U');
+        $user = $access['user'];
         return DB::transaction(function() use ($type, $id, $data, $user) {
             return self::updateOne($user, $type, $id, $data);
         });
@@ -336,7 +344,8 @@ class API {
 
     public static function bulkUpdate($type, $data) {
         \Log::debug('API bulk update', ['type' => $type, 'data'=>json_encode($data)]);
-        $user = self::can($type, 'U');
+        $access = self::can($type, 'U');
+        $user = $access['user'];
         return DB::transaction(function() use ($type, $data, $user) {
             $count = 0;
             foreach ($data as $id => $item) {
@@ -348,8 +357,9 @@ class API {
 
     public static function bulkUpdateOrCreate($type, $keyColumn, $data) {
             \Log::debug('API bulk update or create', ['type' => $type, 'keyColumn'=>$keyColumn]);
-            $user = self::can($type, 'U');
+            $access = self::can($type, 'U');
             self::can($type, 'C');
+            $user = $access['user'];
             return DB::transaction(function() use ($type, $keyColumn, $data, $user) {
                     $total = 0;
                     foreach ($data as $item) {
@@ -376,7 +386,8 @@ class API {
 
     public static function delete($type, $id) {
         \Log::debug('API delete', ['type' => $type, 'id'=>$id]);
-        $user = self::can($type, 'D');
+        $access = self::can($type, 'D');
+        $user = $access['user'];
         return DB::transaction(function() use ($type, $id, $user) {
             return self::deleteOne($user, $type, $id);
         });
@@ -384,7 +395,8 @@ class API {
 
     public static function bulkDelete($type, $ids) {
         \Log::debug('API bulk delete', ['type' => $type, 'ids'=>$ids]);
-        $user = self::can($type, 'D');
+        $access = self::can($type, 'D');
+        $user = $access['user'];
         return DB::transaction(function() use ($type, $ids, $user) {
             $count = 0;
             foreach ($ids as $id) {
@@ -396,7 +408,8 @@ class API {
 
     public static function deleteQuery($type, $query) {
         \Log::debug('API query delete', ['type' => $type, 'query'=>$query]);
-        $user = self::can($type, 'D');
+        $access = self::can($type, 'D');
+        $user = $access['user'];
         return DB::transaction(function() use ($type, $user, $query) {
             $q = self::provider($type)->where('client_id', $user->client_id);
             foreach($query as $field => $value) {
@@ -506,6 +519,6 @@ class API {
         if (is_null($user)) throw new PermissionException("No user");
         $access = Right::canUser($user, $type, $action);
         if (is_null($access)) throw new PermissionException("Access denied for $action on $type");
-        return $user;
+        return $access;
     }
 }

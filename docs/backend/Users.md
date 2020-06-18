@@ -2,7 +2,7 @@
 
 Applate imposes a simple access model: 
 
-* Each user has exaclty one role.
+* Each user has exactly one role.
 * Each role has several rights in an ordered list.
 * An action on a type is only allowed when a right exists that permits that access.
 * The right may impose further constraints for the action (like columns and rows).  
@@ -34,8 +34,13 @@ Each rights has the following attributes:
 |---|---|---|
 |tables|The types this right applies to. If "*", all types are applicable.|users,role|
 |columns|The fields of the type this right applies to. If "*", all fields are applicable.|*|
-|where|An expression imposed on the items in the scope of the action.|TBD|
+|where|An JSON query expression (see Query)[Query.md]|TBD|
 |actions|A combination of the letters CRUD|R|
+
+In the where-Expression, query parameters of the form `":projects"` can be used.
+They are substituted by corresponding attributes of the authenticated user.
+Besides her database attributes, you can add other in a Listener for the `ApiAfterAuthenticatedEvent`
+(see BusinessLogic)[BusinessLogic.md].
 
 For example:
 
