@@ -21,7 +21,7 @@
             v-if="editable(row, col) && !col.type"
             class="no-border"
             v-model="row[col.name]"
-            :disabled="!editable(row, col)"
+            :disabled="!editable(row, col) || readonly"
             @blur="save(row, col.name)"
             :placeholder="col.placeholder"
             :ref="`field-${$index}-${i}`"
@@ -39,7 +39,7 @@
             v-if="col.type=='date' || col.type=='datetime'"
             v-model="row[col.name]"
             :type="col.type"
-            :disabled="!editable(row, col)"
+            :disabled="!editable(row, col) || readonly"
             value-format="yyyy-MM-dd hh:mm"
             @blur="save(row, col.name)"
           />

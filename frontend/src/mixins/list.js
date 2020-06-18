@@ -22,7 +22,7 @@ export default {
         .filter(right => right.tables=='*' || right.tables.search(this.type)!=-1)
     },
     readonly() {
-      return !this.userCan(['CRUD', 'R'])
+      return !this.userCan('U')
     }
   },
   watch: {
