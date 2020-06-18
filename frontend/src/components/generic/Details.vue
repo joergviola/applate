@@ -43,10 +43,9 @@ export default {
   },
   computed: {
     readonly() {
-      const actions = ['CRUD', 'U']
       const rights = api.user().role.rights
         .filter(right => right.tables=='*' || right.tables.search(this.type)!=-1)
-        .filter(right => actions.indexOf(right.actions)!=-1)
+        .filter(right => right.actions.indexOf('U')!=-1)
       return rights.length==0
     }
   },
