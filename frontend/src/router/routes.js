@@ -14,9 +14,10 @@ export default [
     }
   },
   {
-    path: '/user',
+    path: '/users',
     name: 'Users',
     component: Tabs,
+    props: true,
     meta: {
       icon: 'el-icon-s-home',
       layout: 'default',
@@ -37,7 +38,7 @@ export default [
             { name: 'name', label: 'Name', editable: true },
             { name: 'email', label: 'E-mail', editable: true },
           ],
-          detail: "/user",
+          detail: "/users",
           createBy: "button",
     
         }),

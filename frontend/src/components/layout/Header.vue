@@ -1,30 +1,31 @@
 <template>
-    <el-row type="flex" justify="space-between">
-        <el-col :span="5">
-            <img height="50px" src="@/assets/img/logo.png" />
-        </el-col>
-        <el-col :span="16">
+    <div style="display: flex; justify-content: flex-start;">
+        <div style="width: 150px" >
+            <img height="50px" style="margin: 5px" src="@/assets/img/logo.png" />
+        </div>
+        <div  style="flex-grow: 1; display: flex; justify-content: space-between; align-items: stretch;">
             <el-breadcrumb separator-class="el-icon-arrow-right" style="height: 60px; line-height: 60px">
                 <el-breadcrumb-item 
                     v-for="(m,i) in $route.matched"
-                    :to="{ path: m.path }"
+                    :to="breadcrumbPath(i)"
                     :key="i"
                 >{{m.name}}</el-breadcrumb-item>
             </el-breadcrumb>            
-        </el-col>
-        <el-col :span="6" align="right">
-            <avatar :user="user" cls="header-avatar"/>
-            <el-dropdown style="height: 60px; line-height: 60px">
-                <span class="el-dropdown-link text-right">
-                    {{user.name}}
-                    <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item<a @click.prevent="logout">Logout</a></el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
-        </el-col>
-    </el-row>
+            <div v-if="user" style="text-align: right;">
+                <avatar :user="user" cls="header-avatar"/>
+                <el-dropdown style="height: 60px; line-height: 60px; margin-left: auto;margin-right: 25px">
+                    <span class="el-dropdown-link text-right">
+                        {{user.name}}
+                        <i class="el-icon-arrow-down el-icon--right"></i>
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item><a @click.prevent="profile">Profile</a></el-dropdown-item>
+                        <el-dropdown-item><a @click.prevent="logout">Logout</a></el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -56,6 +57,26 @@ export default {
         async logout() {
             await api.logout()
             this.$router.push("/login")
+        },
+        profile() {
+            this.$router.push(`/users/${this.user.id}/detail`)
+        },
+        breadcrumbPath(index) {
+            const route = this.$route.matched[index]
+            let tmpl = route.path
+            if (route.redirect) {
+                if (route.redirect[0] == '/') tmpl = route.redirect
+                else tmpl += '/' + route.redirect
+            }
+            const params = this.$route.params
+
+            return { path: this.replace(tmpl, params) }
+        },
+        replace(tmpl, params) {
+            for (let key in params) {
+                tmpl = tmpl.replace(':'+key, params[key])
+            }
+            return tmpl
         }
     }
 }
