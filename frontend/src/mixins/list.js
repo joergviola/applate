@@ -5,7 +5,7 @@ import Sortable from 'sortablejs'
 export default {
   data() {
     return {
-      list: null,
+      list: [],
       loading: true,
     }
   },
@@ -41,6 +41,9 @@ export default {
       if (this.createBy == 'row' || this.createBy==null) {
         const item = Object.assign({}, this.template)
         item._meta = this.meta
+        if (this.sort) {
+          item[this.sort] = this.list.length+1
+        }
         this.list.push(item)
       }
     },
@@ -173,8 +176,8 @@ export default {
         })
       }
     },
-    userCan(actions) {
-      const rights = this.rights.filter(right => actions.indexOf(right.actions)!=-1)
+    userCan(action) {
+      const rights = this.rights.filter(right => right.actions.indexOf(action)!=-1)
       return rights.length!=0
     }
   },

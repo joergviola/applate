@@ -22,7 +22,7 @@
             class="no-border"
             v-model="row[col.name]"
             :disabled="!editable(row, col) || readonly"
-            @blur="save(row, col.name)"
+            @change="save(row, col.name)"
             :placeholder="col.placeholder"
             :ref="`field-${$index}-${i}`"
             @keyup.enter.native="onEnter(row, i, $index)"
@@ -30,7 +30,7 @@
             @keyup.down.native="onArrow(i, $index, +1)"
           />
           <span v-if="!editable(row, col) && !col.type" class="input-disabled">{{typeof col.name === 'string' ? _.get(row, col.name) : col.name(row) }}</span>
-          <el-select v-if="col.type=='select'" class="no-border" v-model="row[col.name]" @blur="save(row, col.name)"  :placeholder="col.placeholder">
+          <el-select v-if="col.type=='select'" class="no-border" v-model="row[col.name]" @change="save(row, col.name)"  :placeholder="col.placeholder">
             <el-option v-for="(o, i) in col.options" :key="i" :label="col.display ? _.get(o, col.display) : o" :value="col.id ? _.get(o, col.id) : o" />
           </el-select>
           <el-date-picker
@@ -41,7 +41,7 @@
             :type="col.type"
             :disabled="!editable(row, col) || readonly"
             value-format="yyyy-MM-dd hh:mm"
-            @blur="save(row, col.name)"
+            @change="save(row, col.name)"
           />
           <progress-bar
             v-if="col.type=='progress'"
@@ -53,11 +53,9 @@
 
       <el-table-column align="right" label="Actions" fixed="right">
         <template slot-scope="{row}">
-          <el-button v-if="row.id && detail" class="filter-item pull-right" type="primary" icon="el-icon-edit" @click="detailClicked(row)" />
-          <el-button v-if="row.id && allowDelete" class="filter-item pull-right" type="danger" icon="el-icon-remove" @click="remove(row)">
-          </el-button>
-          <el-button v-if="!row.id" class="filter-item pull-right" type="primary" icon="el-icon-plus" @click="create(row)">
-          </el-button>
+          <i v-if="row.id && allowDelete" class="action el-icon-remove-outline" @click="remove(row)" title="Delete this line"/> 
+          <i v-if="row.id && detail" class="action el-icon-arrow-right" @click="detailClicked(row)"  title="Edit details"/> 
+          <i v-if="!row.id" class="action el-icon-circle-plus-outline" @click="create(row)"  title="Create a new line"/> 
         </template>
       </el-table-column>
     </el-table>
@@ -93,6 +91,13 @@ export default {
 <style scoped type="sass">
 .input-disabled {
   padding: 0 15px;
+}
+i.action {
+  color: #AAAAAA;
+  cursor: pointer;
+  font-size: 150%;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 i {
   color: #EEEEEE;
