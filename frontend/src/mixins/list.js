@@ -105,32 +105,37 @@ export default {
       api.updateBulk(this.type, data)
     },
     async save(row, attr) {
-      if (!row.id) return
-      try {
-        const data = {}
-        data[attr] = row[attr]
-        await api.update(this.type, row.id, data)
-      } catch (error) {
-        this.$notify({
-          title: 'Error',
-          message: error.message,
-          type: 'error',
-          duration: 15000
-        })
-      }
+      if (!row.id) {
+        await this.create(row, false)
+      } else {
+        try {
+          const data = {}
+          data[attr] = row[attr]
+          await api.update(this.type, row.id, data)
+        } catch (error) {
+          this.$notify({
+            title: 'Error',
+            message: error.message,
+            type: 'error',
+            duration: 15000
+          })
+        }
+        }
     },
-    async create(row) {
+    async create(row, showError=true) {
       try {
         const result = await api.create(this.type, row)
         row.id = result.id
         this.addNew()
       } catch (error) {
-        this.$notify({
-          title: 'Error',
-          message: error.message,
-          type: 'error',
-          duration: 15000
-        })
+        if (showError) {
+          this.$notify({
+            title: 'Error',
+            message: error.message,
+            type: 'error',
+            duration: 15000
+          })
+        }
       }
     },
     async remove(row) {
