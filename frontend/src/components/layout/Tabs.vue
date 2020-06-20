@@ -75,6 +75,9 @@ export default {
       }
       return !meta.hidden
     }
+  },
+  mounted() {
+    console.log("TABS mounted")
   }
 }
 </script>

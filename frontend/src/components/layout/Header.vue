@@ -6,8 +6,8 @@
         <div  style="flex-grow: 1; display: flex; justify-content: space-between; align-items: stretch;">
             <el-breadcrumb separator-class="el-icon-arrow-right" style="height: 60px; line-height: 60px">
                 <el-breadcrumb-item 
-                    v-for="(m,i) in $route.matched"
-                    :to="breadcrumbPath(i)"
+                    v-for="(m,i) in breadcrumbs"
+                    :to="m.path"
                     :key="i"
                 >{{m.name}}</el-breadcrumb-item>
             </el-breadcrumb>            
@@ -31,13 +31,15 @@
 <script>
 import Avatar from '@/components/generic/Avatar'
 import api from '@/api'
+import store from '@/util/Store.js'
 
 export default {
     name: "Header",
     components: {Avatar},
     data() {
         return {
-            user: api.user()
+            user: api.user(),
+            store: store
         }
     },
     computed: {
@@ -51,6 +53,12 @@ export default {
                 .split(' ')
                 .map(name => name.substring(0, 1).toUpperCase())
                 .join('')
+        },
+        breadcrumbs() {
+            return this.$route.matched.map((match, i) => ({
+                path: this.breadcrumbPath(match),
+                name: (this.store.breadcrumbs.length>i ? this.store.breadcrumbs[i] : null ) || match.meta.title || match.name, 
+            }))
         }
     },
     methods: {
@@ -61,8 +69,7 @@ export default {
         profile() {
             this.$router.push(`/users/${this.user.id}/detail`)
         },
-        breadcrumbPath(index) {
-            const route = this.$route.matched[index]
+        breadcrumbPath(route) {
             let tmpl = route.path
             if (route.redirect) {
                 if (route.redirect[0] == '/') tmpl = route.redirect
