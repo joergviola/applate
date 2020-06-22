@@ -25,9 +25,9 @@
             @change="save(row, col.name)"
             :placeholder="col.placeholder"
             :ref="`field-${$index}-${i}`"
-            @keyup.enter.native="onEnter(row, i, $index)"
-            @keyup.up.native="onArrow(i, $index, -1)"
-            @keyup.down.native="onArrow(i, $index, +1)"
+            @keydown.enter.native="onEnter(row, i, $index)"
+            @keydown.up.native="onArrow(i, $index, -1)"
+            @keydown.down.native="onArrow(i, $index, +1)"
           />
           <span v-if="!editable(row, col) && !col.type" class="input-disabled">{{typeof col.name === 'string' ? _.get(row, col.name) : col.name(row) }}</span>
           <el-select v-if="col.type=='select'" class="no-border" v-model="row[col.name]" @change="save(row, col.name)"  :placeholder="col.placeholder">
