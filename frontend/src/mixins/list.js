@@ -37,14 +37,18 @@ export default {
     this.getList()
   },
   methods: {
-    addNew() {
+    addNew(pos = null) {
       if (this.createBy == 'row' || this.createBy==null) {
         const item = Object.assign({}, this.template)
         item._meta = this.meta
         if (this.sort) {
           item[this.sort] = this.list.length+1
         }
-        this.list.push(item)
+        if (pos==null) {
+          this.list.push(item)
+        } else {
+          this.list.splice(pos, 0, item)
+        }
       }
     },
     async getList() {
@@ -126,7 +130,8 @@ export default {
       try {
         const result = await api.create(this.type, row)
         row.id = result.id
-        this.addNew()
+        await this.updateSort()
+        //this.addNew()
       } catch (error) {
         if (showError) {
           this.$notify({
@@ -138,19 +143,23 @@ export default {
         }
       }
     },
-    async remove(row) {
+    async remove(row, ask=true) {
       try {
-        try {
-          await this.$confirm('Are you sure?', 'Warning', {
-            confirmButtonText: 'OK',
-            cancelButtonText: 'Cancel',
-            type: 'warning'
-          })
-        } catch (cancel) {
-          return
+        if (ask) {
+          try {
+            await this.$confirm('Are you sure?', 'Warning', {
+              confirmButtonText: 'OK',
+              cancelButtonText: 'Cancel',
+              type: 'warning'
+            })
+          } catch (cancel) {
+            return
+          }
         }
         await api.delete(this.type, row.id)
-        this.getList()
+        const index = this.list.indexOf(row)
+        this.list.splice(index, 1)
+        //this.getList()
       } catch (error) {
         this.$notify({
           title: 'Error',
@@ -163,13 +172,32 @@ export default {
     async onEnter(row, column, index) {
       if (!row.id) {
         await this.create(row)
+        return
+      } else {
+        this.addNew(index+1)
       }
-      const key = `field-${index + 1}-0`
-      let ref = this.$refs[key]
-      if (Array.isArray(ref)) ref = ref[0]
       this.$nextTick(() => {
-        ref.focus()
+        const key = `field-${index+1}-${0}`
+        let ref = this.$refs[key]
+        if (Array.isArray(ref)) ref = ref[0]
+          ref.focus()
       })
+    },
+    async onDelete(event, row, column, index, value) {
+      if (value || column!=0) return
+      if (!row.id) {
+        const index = this.list.indexOf(row)
+        this.list.splice(index, 1)
+      } else {
+        this.remove(row)
+      }
+      this.$nextTick(() => {
+        const key = `field-${index-1}-${column}`
+        let ref = this.$refs[key]
+        if (Array.isArray(ref)) ref = ref[0]
+          ref.focus()
+      })
+      event.preventDefault()
     },
     onArrow(column, index, dir) {
       if (0 <= index + dir && index + dir < this.list.length) {
